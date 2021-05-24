@@ -1,0 +1,347 @@
+<!doctype html>
+<html>
+<head>
+	<title>JSI Skate</title>
+	<meta name='viewport' content='width=device-width initial-scale=1'>
+	<meta charset='utf-8'>
+	<style>		
+		div {
+			overflow: scroll;
+			border: 2px solid red;
+			margin: 10px;
+		}
+		label {color: white;}
+		table {
+			margin: 10px;
+			border-collapse: collapse;
+		}
+		#ref td {
+			border: 2px solid yellow;			
+		}
+		button {margin: 10px;}
+	</style>
+	<script>
+		function Calculadora() {
+			this.acertos = new Array(9);
+			this.ganhos = new Array(9);
+			this.perdas = new Array(9);
+		}
+
+		Calculadora.prototype = {
+			calcular: function(s, o) {		
+				for (var i = 0; i < 9; i++) {
+					var random = Math.random();			
+					var chance;
+					
+					if (i <= 6) {
+						 chance = s[i] / o[i];
+						
+						if ((s[i] > 0) && (o[i] > 0) && (random <= chance)) {
+							this.acertos[i] = 'acertou';
+							this.ganhos[i] = o[i] / s[i];
+						} else if ((s[i] > 0) && (o[i] > 0) && (random > chance)) {
+							this.acertos[i] = 'errou';
+							this.perdas[i] = Math.abs(o[i] - s[i]);
+						}
+					} else {
+						if (o[i]) {
+							chance = s[i] / 100;
+							
+							if (random <= chance) {
+								this.acertos[i] = 'acertou';
+							} else {
+								this.acertos[i] = 'errou';
+								this.perdas[i] = 1;
+							}
+							this.ganhos[i] = 0.1;							
+						}				
+					}
+				}
+			},
+			
+			limpar: function() {
+				this.acertos.fill('');
+				this.ganhos.fill(0);
+				this.perdas.fill(0);
+			}
+		}
+	</script>
+</head>
+<body bgcolor='black' text='yellow'>
+	<h1 align='center'><font color='blue'>JSI Skateboard</font></h1>
+	<div id='const'>
+		Nome: <input id='nometxt' type='text'> <br>
+		Estilo:
+		<input id='strt' type='checkbox'>Street
+		<input id='vert' type='checkbox'>Vertical <br>
+		<button id='criar'>Criar</button>
+	</div>
+	<div id='skater'>
+		Nome: <label id='nomelbl'></label> <br>
+		Estilo: <label id='estilolbl'></label> <br>
+		Estado Físico: <label id='eflbl'></label> <br>
+		Estado do Skate: <label id='eslbl'></label> <br>
+		<button id='comprar'>Comprar skate novo</button>
+	</div>
+	<div id='tabela'>
+	<table id='tab' cellpadding=7>
+		<tr> <th> Habilidades <th> Nível <th colspan=2> Obstáculos <th> Resultado
+		<tr> <td> Aéreo: <td> <label id='aereo'> <td> Metros: <td> <input id='mar' type='text' size=2> <td> <label id='rar'>
+		<tr> <td> Ollie: <td> <label id='ollie'> <td> Metros: <td> <input id='moll' type='text' size=2> <td> <label id='roll'>
+		<tr> <td> Pouso: <td> <label id='pouso'> <td> Metros: <td> <input id='mland' type='text' size=2> <td> <label id='rland'>
+		<!--<tr> <td> Velocidade: <td> <label id='velocidade'> <td> m/s <td> <input id='mvel' type='text'>-->
+		<tr> <td> Giro no aéreo: <td> <label id='giroaereo'> <td> Graus: <td> <input id='mspinar' type='text' size=2> <td> <label id='rspinar'>
+		<tr> <td> Giro no ollie: <td> <label id='giroollie'> <td> Graus: <td> <input id='mspinoll' type='text' size=2> <td> <label id='rspinoll'>
+		<tr> <td> Grind/Slide: <td> <label id='gdsd'> <td> Metros: <td> <input id='mgs' type='text' size=2> <td> <label id='rgs'>
+		<tr> <td> Manual: <td> <label id='manual'> <td> Segundos: <td> <input id='mman' type='text' size=2> <td> <label id='rman'>
+		<tr> <td> Flip (acerto %): <td> <label id='flip'> <td> Tentar: <td> <input id='mflip' type='checkbox'> <td> <label id='rflip'>
+		<tr> <td> Grab (acerto %): <td> <label id='grab'> <td> Tentar: <td> <input id='mgrab' type='checkbox'> <td> <label id='rgrab'>
+	</table>
+	<button id='calc'>Calcular</button>
+	<button id='limpar'>Limpar</button>
+	<button id='save'>Salvar</button>
+	<button id='load'>Carregar</button>
+	</div>
+	<div id='referencia'>
+	<table id='ref' cellpadding=15>
+		<font color='black'>
+		<tr> <td align='center' colspan=12> <b> Referência de níveis
+		<tr> <td> Níveis: <td> 5 <td> 10 <td> 20 <td> 30 <td> 40 <td> 50 <td> 60 <td> 70 <td> 80 <td> 90 <td> 99.9
+		<tr> <td> Aéreo (m): <td> 0.20 <td> 0.40 <td> 0.80 <td> 1.20 <td> 1.60 <td> 2.00 <td> 2.40 <td> 2.80 <td> 3.20 <td> 3.60 <td> 4.00
+		<tr> <td> Ollie(m): <td> 0.06 <td> 0.12 <td> 0.25 <td> 0.38 <td> 0.50 <td> 0.62 <td> 0.75 <td> 0.88 <td> 1.00 <td> 1.12 <td> 1.25
+		<tr> <td> Pouso (m): <td> 0.20 <td> 0.40 <td> 0.80 <td> 1.20 <td> 1.60 <td> 2.00 <td> 2.40 <td> 2.80 <td> 3.20 <td> 3.60 <td> 4.00
+		<tr> <td> Giro no aéreo (°): <td> 45 <td> 90 <td> 180 <td> 270 <td> 360 <td> 450 <td> 540 <td> 630 <td> 720 <td> 810 <td> 900
+		<tr> <td> Giro no Ollie (°): <td> 18 <td> 36 <td> 72 <td> 108 <td> 144 <td> 180 <td> 216 <td> 252 <td> 288 <td> 324 <td> 360
+		<tr> <td> Grind/Slide (m): <td> 1.00 <td> 2.00 <td> 4.00 <td> 6.00 <td> 8.00 <td> 10.00 <td> 12.00 <td> 14.00 <td> 16.00 <td> 18.00 <td> 20.00
+		<tr> <td> Manual (s): <td> 2.00 <td> 4.00 <td> 8.00 <td> 12.00 <td> 16.00 <td> 20.00 <td> 24.00 <td> 28.00 <td> 32.00 <td> 36.00 <td> 40.00
+		</font>
+	</table>
+	</div>
+	<script>
+		//botões
+		var botCriar = document.getElementById('criar');
+		var botCalcular = document.getElementById('calc');
+		var botComprar = document.getElementById('comprar');
+		var botLimpar = document.getElementById('limpar');
+		var botSalvar = document.getElementById('save');
+		var botCarregar = document.getElementById('load');
+		// dados da criação
+		var nometxt = document.getElementById('nometxt');
+		var street = document.getElementById('strt');
+		var vertical = document.getElementById('vert');
+		//estados
+		var nome = document.getElementById('nomelbl');
+		var estilo = document.getElementById('estilolbl');
+		var estadoFisico = document.getElementById('eflbl');
+		var estadoSkate = document.getElementById('eslbl')
+		// habilidades
+		var aereo = document.getElementById('aereo');
+		var ollie = document.getElementById('ollie');
+		var pouso = document.getElementById('pouso');
+		var spinAereo = document.getElementById('giroaereo');
+		var spinOllie = document.getElementById('giroollie');
+		var grdsld = document.getElementById('gdsd');
+		var manual = document.getElementById('manual');
+		var flip = document.getElementById('flip');
+		var grab = document.getElementById('grab');
+		var habilidades = [aereo, ollie, pouso, spinAereo, spinOllie, grdsld, manual,
+						   flip, grab];
+		// medidas do obstáculos
+		var mAereo = document.getElementById('mar');
+		var mOllie = document.getElementById('moll');
+		var mPouso = document.getElementById('mland');
+		var mSpinAereo = document.getElementById('mspinar');
+		var mSpinOllie = document.getElementById('mspinoll');
+		var mGdSd = document.getElementById('mgs');
+		var mManual = document.getElementById('mman');
+		var mFlip = document.getElementById('mflip');
+		var mGrab = document.getElementById('mgrab');
+		var medidas = [mAereo, mOllie, mPouso, mSpinAereo, mSpinOllie, mGdSd, mManual,
+					   mFlip, mGrab];
+		// resultados
+		var raereo = document.getElementById('rar');
+		var rollie = document.getElementById('roll');
+		var rpouso = document.getElementById('rland');
+		var rspinAereo = document.getElementById('rspinar');
+		var rspinOllie = document.getElementById('rspinoll');
+		var rgrdsld = document.getElementById('rgs');
+		var rmanual = document.getElementById('rman');
+		var rflip = document.getElementById('rflip');
+		var rgrab = document.getElementById('rgrab');
+		var resultados = [raereo, rollie, rpouso, rspinAereo, rspinOllie, rgrdsld,
+						  rmanual, rflip, rgrab];
+		// calculadora
+		var calculadora = new Calculadora();
+		
+		botCriar.onclick = function() {
+			// dados de estado
+			estadoFisico.innerText = '100';
+			estadoSkate.innerText = '500';
+			// dados do personagem criado
+			nome.innerText = nometxt.value;			
+		
+			if (street.checked && !vertical.checked) { // street
+				estilo.innerText = 'Street';
+				aereo.innerText = '1.0';
+				ollie.innerText = '10.0';
+				pouso.innerText = '10.0';
+				spinAereo.innerText = '1.0';
+				spinOllie.innerText = '10.0';
+				grdsld.innerText = '5.0';
+				manual.innerText = '5.0';
+				flip.innerText = '10.0';
+				grab.innerText = '1.0';
+			} else if (!street.checked && vertical.checked) { // vertical
+				estilo.innerText = 'Vertical';
+				aereo.innerText = '10.0';
+				ollie.innerText = '5.0';
+				pouso.innerText = '5.0';
+				spinAereo.innerText = '10.0';
+				spinOllie.innerText = '1.0';
+				grdsld.innerText = '1.0';
+				manual.innerText = '1.0';
+				flip.innerText = '1.0';
+				grab.innerText = '20.0';
+			} else if (street.checked && vertical.checked) { // overall
+				estilo.innerText = 'Overall';
+				aereo.innerText = '5.0';
+				ollie.innerText = '10.0';
+				pouso.innerText = '10.0';
+				spinAereo.innerText = '5.0';
+				spinOllie.innerText = '5.0';
+				grdsld.innerText = '5.0';
+				manual.innerText = '5.0';
+				flip.innerText = '5.0';
+				grab.innerText = '5.0';
+			} else { // sem estilo selecionado
+				estilo.innerText = '';
+				aereo.innerText = '';
+				ollie.innerText = '';
+				pouso.innerText = '';
+				spinAereo.innerText = '';
+				spinOllie.innerText = '';
+				grdsld.innerText = '';
+				manual.innerText = '';
+				flip.innerText = '';
+				grab.innerText = '';
+			}
+		}
+		
+		botCalcular.onclick = function() {
+			// os estados
+			var fisico = new Number(estadoFisico.innerText);
+			var skate = new Number(estadoSkate.innerText);
+			// os níveis dos obstáculos
+			var obstAereo = new Number(mAereo.value) * 25;
+			var obstOllie = new Number(mOllie.value) * 80;
+			var obstPouso = new Number(mPouso.value) * 25;
+			var obstSpinAereo = new Number(mSpinAereo.value) / 9;
+			var obstSpinOllie = new Number(mSpinOllie.value) / 3.6;
+			var obstGdSd = new Number(mGdSd.value) * 5;
+			var obstManual = new Number(mManual.value) * 2.5;
+			var obstFlip = mFlip.checked;
+			var obstGrab = mGrab.checked;
+			var obstaculos = [obstAereo, obstOllie, obstPouso, obstSpinAereo, obstSpinOllie,
+							  obstGdSd, obstManual, obstFlip, obstGrab];
+			// os níveis do skatista
+			var medidaAereo = new Number(aereo.innerText);
+			var medidaOllie = new Number(ollie.innerText);
+			var medidaPouso = new Number(pouso.innerText);
+			var medidaSpinAereo = new Number(spinAereo.innerText);
+			var medidaSpinOllie = new Number(spinOllie.innerText);
+			var medidaGdSd = new Number(grdsld.innerText);
+			var medidaManual = new Number(manual.innerText);
+			var medidaFlip = new Number(flip.innerText);
+			var medidaGrab = new Number(grab.innerText);	
+			var skatista = [medidaAereo, medidaOllie, medidaPouso, medidaSpinAereo, medidaSpinOllie,
+							  medidaGdSd, medidaManual, medidaFlip, medidaGrab];
+										  
+			calculadora.calcular(skatista, obstaculos);
+			
+			for (var i = 0; i < 9; i++) { // acertou ou errou
+				if (typeof calculadora.acertos[i] != 'undefined') {
+					resultados[i].innerText = calculadora.acertos[i];
+				}
+			}
+			
+			for (var i = 0; i < 9; i++) { // ganho de habilidades
+				if (typeof calculadora.ganhos[i] != 'undefined') {
+					if (skatista[i] < 99.9) {
+						skatista[i] += calculadora.ganhos[i];
+						habilidades[i].innerText = skatista[i].toFixed(1);
+					} else {
+						habilidades[i].innerText = '99.9';
+					}					
+				}				
+			}
+			
+			for (var i = 0; i < 9; i++) { // danos físicos e no skate
+				if (typeof calculadora.perdas[i] != 'undefined' && (skate > 0)) {
+					if (i < 7) fisico -= calculadora.perdas[i];
+					if (fisico > 0) {						
+						estadoFisico.innerText = fisico.toFixed();
+					} else {
+						estadoFisico.innerText = 'Ficou gravemente ferido. Precisa se recuperar.';
+					}
+					
+					skate -= calculadora.perdas[i];	
+					if (skate > 0) {										
+						estadoSkate.innerText = skate.toFixed();
+					} else {
+						estadoSkate.innerText = 'Seu skate quebrou. Deve comprar outro.';
+					}					
+				} 				
+			}
+			
+			calculadora.limpar();
+		}
+		
+		botComprar.onclick = function() {
+			estadoSkate.innerText = '500'
+		}
+		
+		botSalvar.onclick = function() {
+			localStorage.setItem('nome', nome.innerText);
+			localStorage.setItem('estilo', estilo.innerText);
+			localStorage.setItem('skate', estadoSkate.innerText);
+			localStorage.setItem('aereo', aereo.innerText);
+			localStorage.setItem('ollie', ollie.innerText);
+			localStorage.setItem('pouso', pouso.innerText);
+			localStorage.setItem('spinAereo', spinAereo.innerText);
+			localStorage.setItem('spinOllie', spinOllie.innerText);
+			localStorage.setItem('grdsld', grdsld.innerText);
+			localStorage.setItem('manual', manual.innerText);
+			localStorage.setItem('flip', flip.innerText);
+			localStorage.setItem('grab', grab.innerText);
+		}
+		
+		botCarregar.onclick = function() {
+			nome.innerText = localStorage.getItem('nome');
+			estilo.innerText = localStorage.getItem('estilo');
+			estadoFisico.innerText = '100';
+			estadoSkate.innerText = localStorage.getItem('skate');
+			aereo.innerText = localStorage.getItem('aereo');
+			ollie.innerText = localStorage.getItem('ollie');
+			pouso.innerText = localStorage.getItem('pouso');
+			spinAereo.innerText = localStorage.getItem('spinAereo');
+			spinOllie.innerText = localStorage.getItem('spinOllie');
+			grdsld.innerText = localStorage.getItem('grdsld');
+			manual.innerText = localStorage.getItem('manual');
+			flip.innerText = localStorage.getItem('flip');
+			grab.innerText = localStorage.getItem('grab');
+		}
+		
+		botLimpar.onclick = function() {
+			for (var i = 0; i < 9; i++) {
+				if (i < 7) {
+					medidas[i].value = '';
+				} else {
+					medidas[i].checked = false;
+				}
+				
+				resultados[i].innerText = '';
+			}
+		}
+	</script>
+</body>
+</html>
