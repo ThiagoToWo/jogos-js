@@ -1,0 +1,127 @@
+<!doctype html>
+<html>
+<head>
+	<title>Sumô</title>
+	<script>
+	var canvas;
+	var ctx;
+	var iv;
+	var pressionadas = [];
+	var lutadores;
+	var lutImg = new Image();
+	
+	function init() {
+		canvas = document.getElementById('canvas');
+		ctx = canvas.getContext('2d');		
+		
+		lutImg.src = 'lutadores.png';
+		lutadores = new Lutador(510, 157, lutImg);
+		lutImg.onload = function() {
+			lutadores.desenhar();
+		}
+		// Sol.
+		ctx.fillStyle = 'green';
+		ctx.arc(250, 150, 100, 0, 2 * Math.PI);
+		ctx.fill();	
+		// Chão.
+		ctx.fillStyle = '#6c6eff';
+		ctx.fillRect(0, 550, 1500, 200);
+		// Arena.
+		ctx.fillStyle = '#ffffa7';		
+		ctx.fillRect(400, 500, 700, 100);
+		// Contorno da arena.
+		ctx.strokeStyle = 'black';
+		ctx.lineWidth = 3;		
+		ctx.strokeRect(400, 500, 700, 100);
+		
+		window.addEventListener('keydown', function(e) {
+			var tecla = e.keyCode;
+			switch (tecla) {
+				case 75: // letra K
+					if (!pressionadas[0]) {
+						pressionadas[0] = true;
+						processar();
+					}
+					break;
+				case 90: // letra Z
+					if (!pressionadas[1]) {
+						pressionadas[1] = true;
+						processar();
+					}
+			}
+		});
+		window.addEventListener('keyup', function(e) {
+			var tecla = e.keyCode;
+			switch (tecla) {
+				case 75: pressionadas[0] = false; break;
+				case 90: pressionadas[1] = false;
+			}
+		});
+		
+	}
+	
+	function processar() {
+		ctx.clearRect(0, 0, canvas.width, canvas.height);
+		// Sol.
+		ctx.fillStyle = 'green';
+		ctx.arc(250, 150, 100, 0, 2 * Math.PI);
+		ctx.fill();	
+		// Chão.
+		ctx.fillStyle = '#6c6eff';
+		ctx.fillRect(0, 550, 1500, 200);
+		// Arena.
+		ctx.fillStyle = '#ffffa7';		
+		ctx.fillRect(400, 500, 700, 100);
+		// Contorno da arena.
+		ctx.strokeStyle = 'black';
+		ctx.lineWidth = 3;		
+		ctx.strokeRect(400, 500, 700, 100);
+		
+		lutadores.atualizar();
+		lutadores.desenhar();
+	}
+
+	function Lutador(x, y, imagem) {
+		this.imagem = imagem;
+		this.x = x;
+		this.y = y;
+		this.v = 20;
+		this.cor = 'red';
+	}
+	
+	Lutador.prototype = {
+		atualizar: function() {
+			if (pressionadas[0]) {
+				this.x -= this.v;
+			}
+
+			if (pressionadas[1]) {
+				this.x += this.v;
+			}
+			
+			if (this.x <= 710 - this.imagem.width) {
+				alert("O da direita ganhou!");
+			}
+			if (this.x >= 790) {
+				alert("O da esquerda ganhou!");
+			}
+		},
+		desenhar: function() {
+			ctx.drawImage(
+				this.imagem, 
+				this.x, 
+				this.y, 
+				this.imagem.width, // 480
+				this.imagem.height // 385
+			);
+		}
+	}
+	</script>
+	<style>
+	canvas {background: black;}
+	</style>
+</head>
+<body onload='init()'>
+	<canvas id='canvas' width='1500' height='700'></canvas>
+</body>
+</html>
