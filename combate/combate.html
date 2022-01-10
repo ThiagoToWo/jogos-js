@@ -7,34 +7,26 @@
 </head>
 <body>
 	<script>
-	// cria os participantes do torneio
-	var l = criarLutadores('A', 'B', 'C', 'D');
-	//representarLutadores(l[0], l[1], 100, 10);
-	
-	// A e C começarão atacando
-	l[0].turno = 0;
-	l[2].turno = 0;
-	
-	// B e D começarão defendendo
-	l[1].turno = 1;
-	l[3].turno = 1;
-	
-	// decide o campeão da primeira luta entre A e B
-	var vencedor1 = lutar(l[0], l[1]);
-	console.log('//------FIM------//');
-	
-	// decide o campeão da segunda luta entre C e D
-	var vencedor2 = lutar(l[2], l[3]);
-	console.log('//------FIM------//');
-	
-	// o vencedor da primeira luta começará atacando na luta final
+	// criar lutadores
+	var l = criarLutadores('Super Idol', 'Xiafei', 'MC Mirella', 'Latrel');
+	// Super Idol e MC Mirella iniciam atacando
+	l[0].turno = 0; // Super Idol
+	l[2].turno = 0; // MC Mirella
+	// Xiafei e Latrel iniciam defendendo
+	l[1].turno = 1; // Xiafei
+	l[3].turno = 1; // Latrel
+	// vencedor da primeira luta entre Super Idol e Xiafei, narrada no console.
+	var vencedor1 = lutar(l[0], l[1], 'console');
+	console.log('//-------FIM DA PRIMEIRA LUTA-------//');
+	// vencedor da sefunda luta entre MC Mirella e Latrel, narrada no console.
+	var vencedor2 = lutar(l[2], l[3], 'console');
+	console.log('//-------FIM DA SEGUNDA LUTA-------//');
+	// o vencedor da primeira luta inicia atacando
 	vencedor1.turno = 0;
 	vencedor2.turno = 1;
-	
-	// decide o campeão na luta final
-	var campeão = lutar(vencedor1, vencedor2)
-	console.log('//------FIM------//');
-	//representarLutadores(l[0], l[1], 100, 310);
+	// campeão da luta final entre os vencedores ds lutas anteriores, narrada no console.
+	var campeao = lutar(vencedor1, vencedor2);
+	console.log('//-------FIM DA LUTA FINAL-------//');
 	</script>
 </body>
 <html>
