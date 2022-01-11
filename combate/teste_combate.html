@@ -19,13 +19,11 @@
 	var vencedor1 = lutar(l[0], l[1], 'console');
 	console.log('//-------FIM DA PRIMEIRA LUTA-------//');
 	// vencedor da sefunda luta entre MC Mirella e Latrel, narrada no console.
-	var vencedor2 = lutar(l[2], l[3], 'console');
+	var vencedor2 = lutar(l[2], l[3],);
 	console.log('//-------FIM DA SEGUNDA LUTA-------//');
-	// o vencedor da primeira luta inicia atacando
-	vencedor1.turno = 0;
-	vencedor2.turno = 1;
-	// campeão da luta final entre os vencedores ds lutas anteriores, narrada no console.
-	var campeao = lutar(vencedor1, vencedor2);
+	// quando os turnos não são previamente definidos, o lutador1 será o atacante inicial
+	// campeão da luta final entre os vencedores ds lutas anteriores, narrada no alert.
+	var campeao = lutar(vencedor1, vencedor2, 'alert');
 	console.log('//-------FIM DA LUTA FINAL-------//');
 	</script>
 </body>

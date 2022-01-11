@@ -15,7 +15,7 @@
 *		habilidade: 0.3 a 1, // para a frequênciacom que acerta as magias
 *	}
 *
-*Os lutadores precisam ter seus turnos configurados com 0 (atacante) ou 1 (defensor)
+*Os lutadores podem ter seus turnos configurados com 0 (atacante) ou 1 (defensor)
 *antes de serem passados para a função.
 *
 *	//looping do jogo
@@ -23,6 +23,8 @@
 *	l2.turno = 1 // defensor
 *	lutar(l1, l2)
 *
+*Caso os turnos sejam indefinidos ou com valores iguais (ocorre as vezes após uma
+*luta), o lutador1 será o atacante inicial e o lutador2 o defensor. 
 *Com o valor inicial dos turnos, a função executa o primeiro ataque e alterna os
 *atacantes e defensores até ocorrer um vencedor.
 *Com uma vitória decidida, a função usa a auxiliar _atualizar() para atuaizar os
@@ -49,11 +51,17 @@ function lutar(lutador1, lutador2, relator) {
 	// decide quem vai ser o atacante e o defensor pelo valor inicial do turno
 	var atacante = null;
 	var defensor = null;
-
-	if (lutador1.turno == 0) {
+	
+	// se os turnos dos lutadores não estiverem definidos previamente ou definidos iguais
+	if (lutador1.turno == lutador2.turno) {
+		lutador1.turno = 0;
+		lutador2.turno = 1;
 		atacante = lutador1;
 		defensor = lutador2;
-	} else {
+	} else if (lutador1.turno == 0 && lutador2.turno == 1) { //caso estejam definidos
+		atacante = lutador1;
+		defensor = lutador2;
+	}else { 
 		atacante = lutador2;
 		defensor = lutador1;
 	}
