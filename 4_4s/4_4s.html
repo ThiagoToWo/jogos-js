@@ -70,6 +70,7 @@
 		botDfz.onclick = desfazerUltimoSimbolo;		
 		botLmp.onclick = limparExpressão;		
 		botIgl.onclick = avaliarExpressão;
+		botIgl.disabled = true;
 		botRsv.onclick = vizualizarResolvidos;
 		
 		quatros = 0;
@@ -117,6 +118,7 @@
 			botoes[0].disabled = true; // desabilita o botão 4
 			botoes[1].disabled = true; // desabilita o botão 44
 			botoes[2].disabled = true; // desabilita o botão 444
+			botIgl.disabled = false; // habilita o botão de avaliar
 		}
 	}
 
@@ -141,6 +143,7 @@
 		expressao.value = '';
 		resultado.innerHTML = '';	
 		quatros = 0;
+		botIgl.disabled = true;
 			
 		for (var i = 0; i < simbolos.length; i++) {
 			expressao.value += simbolos[i];
@@ -153,6 +156,7 @@
 		resultado.innerHTML = '';
 		quatros = 0;
 		simbolos = [];
+		botIgl.disabled = true;
 		
 		botoes[0].disabled = false; // reabilita o botão 4
 		botoes[1].disabled = false; // reabilita o botão 44
