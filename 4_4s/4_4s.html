@@ -164,17 +164,23 @@
 	}
 	
 	function vizualizarResolvidos() {
-		acertos.showModal();
 		var expressao;
+		// primeiro adiciona o botão de fechar
+		var string_corretas = "<button id='fechar' onclick='fecharCaixaDeDialogo();'>Fechar</button><br/><br/>"
 		
+		// depois escreve as expressões que já foram feitas corretamente
 		for (var i = 1; i <= 100; i++) {
 			expressao = localStorage.getItem(i)
 			if (expressao != null) {
-				acertos.innerHTML += i + ': ' + expressao + '<br/>';
+				string_corretas += i + ': ' + expressao + '<br/>';
 			} else {
-				acertos.innerHTML += i + ': ' + '_________'+ '<br/>';
+				string_corretas += i + ': ' + '_________'+ '<br/>';
 			}
 		}		
+		
+		// adiciona no html do dialog e mostra ele
+		acertos.innerHTML = string_corretas;	
+		acertos.showModal();
 	}
 	
 	function fecharCaixaDeDialogo() {
@@ -208,8 +214,6 @@
 	<button class='grande' id='='>=</button>
 </div>
 <button class='grande' id='resolvidos'>?</button>
-<dialog id='acertos'>
-	<button id='fechar' onclick='fecharCaixaDeDialogo();'>Fechar</button><br/><br/>
-</dialog>
+<dialog id='acertos'></dialog>
 </body>
 </html>
