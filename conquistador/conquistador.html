@@ -1,0 +1,188 @@
+<html>
+<head>
+	<title>O Conquistador</title>
+	<meta charset="utf-8"/>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+	<style>
+	body {background: #adffd0;}
+	</style>
+	<script>	
+	var casas = []; // array de casas
+	var casa = {}; // casa com id, poder e posse	
+	var origem; // casa de origem
+	var primeiroClick = false;
+	
+	function setup(div) { // cria e configura o tabuleiro
+		var botao;
+		var dado1;
+		var dado2;
+		var d12;
+		var numero;
+		var X0 = 10; // coordenada x inicial do tabuleiro
+		var Y0 = 150; // coordenada y inicial do tabuleirow
+		var w = 50; // largura da casa
+		var h = 50; // altura da casa
+		
+		var x = X0;
+		var y = Y0;
+		
+		for (var i = 0; i < 8; i++) { // cada linha
+			for (var j = 0; j < 8; j++) { // cada coluna
+				// valores
+				dado1 = Math.floor(Math.random() * 6 + 1);
+				dado2 = Math.floor(Math.random() * 6 + 1);
+				d12 = dado1 + dado2;
+				id = i * 8 + j;
+				
+				// criação e configuração das casas				
+				botao = document.createElement("button");
+				botao.id = "casa" + id;
+				botao.style.position = "absolute";
+				botao.style.left = String(x + "px");
+				botao.style.top = String(y + "px");
+				botao.style.width = String(w + "px");
+				botao.style.height = String(h + "px");
+				botao.addEventListener("click", escolherCasa, true);
+				
+				casa = {numero: id, poder: d12, minha: false};
+				casas[id] = casa;
+				
+				if ((i + j) % 2 == 0) { // casas verdes
+					botao.innerHTML = d12;
+					botao.style.backgroundColor = "green";
+					botao.style.color = "white";
+					casa.minha = true;
+				}
+				
+				div.appendChild(botao);
+				x += w;
+			}
+			
+			x = X0;
+			y += h;
+		}		
+	}
+	
+	function escolherCasa(e) {
+		var botao = e.target;
+		var id = botao.id.substring(4);
+		var casa = casas[id];
+		
+		if (primeiroClick == false) {
+			if (casa.minha == true) { // minha casa
+				origem = casa;
+				botao.style.backgroundColor = "grey";
+				primeiroClick = true;
+			}			
+		} else {
+			if (casa.minha == true && (casa.numero != origem.numero)) { // minha e diferente 
+				// lógica da movimentação
+				movimentarExercitos(origem, casa);
+			} else if (casa.minha == false) {
+				// lógica do ataque
+				atacarExercitos(origem, casa);
+			} else if (casa.numero == origem.numero) {
+				botao.style.backgroundColor = "green";
+			}
+			
+			primeiroClick = false;
+		}
+	}
+	
+	function movimentarExercitos(origem, destino) {
+		var botaoOrigem = document.getElementById("casa" + origem.numero);
+		var botaoDestino = document.getElementById("casa" + destino.numero);
+		
+		if (!verificarVizinho(origem, destino)) {
+			botaoOrigem.style.backgroundColor = "green";
+			return;
+		}
+		
+		var total = destino.poder + origem.poder;
+				
+		if (total <= 12) {
+			destino.poder += origem.poder;
+			origem.poder = 0;
+		} else {
+			destino.poder = 12;
+			origem.poder = total - 12;
+		}
+		
+		
+		
+		botaoOrigem.style.backgroundColor = "green";
+		botaoOrigem.style.color = "white";
+		botaoDestino.style.backgroundColor = "green";
+		botaoDestino.style.color = "white";		
+		botaoOrigem.innerHTML = origem.poder;
+		botaoDestino.innerHTML = destino.poder;
+	}
+	
+	function atacarExercitos(origem, destino) {
+		var botaoOrigem = document.getElementById("casa" + origem.numero);
+		var botaoDestino = document.getElementById("casa" + destino.numero);
+		
+		if (!verificarVizinho(origem, destino)) {
+			botaoOrigem.style.backgroundColor = "green";
+			return;
+		}
+		
+		var resultado;
+				
+		if (destino.poder > origem.poder) { // perdeu
+			destino.poder -= origem.poder;
+			origem.poder = 0;
+			
+			botaoOrigem.style.backgroundColor = "green";
+			botaoOrigem.style.color = "white";		
+			botaoOrigem.innerHTML = origem.poder;
+			botaoDestino.innerHTML = destino.poder;
+		} else { // ganhou
+			origem.poder -= destino.poder;
+			destino.poder = 0;
+			destino.minha = true;			
+			
+			botaoOrigem.style.backgroundColor = "green";
+			botaoOrigem.style.color = "white";
+			botaoDestino.style.backgroundColor = "green";
+			botaoDestino.style.color = "white";			
+			botaoOrigem.innerHTML = origem.poder;
+			botaoDestino.innerHTML = destino.poder;
+		}
+	}
+	
+	function verificarVizinho(origem, destino) {
+		var oid = origem.numero;
+		var did = destino.numero;
+		var ox = oid % 8; // coluna da origem
+		var oy = (oid - ox) / 8; // linha da origem
+		var dx = did % 8; // coluna do destino
+		var dy = (did - dx) / 8; // linha do destino
+		
+		if (dx == ox + 1 && dy == oy || 
+			dx == ox - 1 && dy == oy || 
+			dx == ox && dy == oy + 1 || 
+			dx == ox && dy == oy - 1 ||
+			dx == ox + 1 && dy == oy + 1 ||
+			dx == ox + 1 && dy == oy - 1 ||
+			dx == ox - 1 && dy == oy + 1 ||
+			dx == ox - 1 && dy == oy - 1) {
+			return true;
+		}
+		
+		return false;
+	}
+	window.onload = function() {
+		var container = document.getElementById("container");
+		setup(container);
+	}
+	</script>
+	
+</head>
+<body>
+	<h1>O Conquistador</h1>
+	<div id="container"></div>
+	
+	
+</body>
+</html>
