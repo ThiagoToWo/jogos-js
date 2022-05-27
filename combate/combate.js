@@ -10,9 +10,9 @@
 *		ataque: 20 a 40, // ganhando ataque * (1 - estilo) a cada vitória
 *		defesa: 10 a 40, // ganhando defesa * 0.2 por vitória
 *		magia: 30 a 50, // ganhando magia * estilo a cada vitória
-*		foco: 0.3 a 1, // para a frequênciacom que acerta os ataques
-*		reflexo:  0.3 a 1, // para a frequênciacom que consegue se defender
-*		habilidade: 0.3 a 1, // para a frequênciacom que acerta as magias
+*		foco: 0.3 a 1, // para a frequência com que acerta os ataques
+*		reflexo:  0.3 a 1, // para a frequência com que consegue se defender
+*		habilidade: 0.3 a 1, // para a frequência com que acerta as magias
 *	}
 *
 *Os lutadores podem ter seus turnos configurados com 0 (atacante) ou 1 (defensor)
