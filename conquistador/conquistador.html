@@ -3,23 +3,68 @@
 	<title>O Conquistador</title>
 	<meta charset="utf-8"/>
 	<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-	<style>
+	<style>	
+	/*aplica opcionalmente as propriedades padrões*/
 	body {background: #adffd0;}
+	#container {
+		position: absolute;
+		left: 1px;
+	}
+	#infos {
+		position: absolute;
+		top: 500px;
+	}
+	
+	/*para telas orientação retrato de 993px até 1024px de largura*/
+	@media (max-device-width: 1024px) {
+		
+	}
+
+	/*para telas orientação retrato de 769px até 992px de largura*/
+	@media (max-device-width: 991px) {
+		
+	}
+
+	/*para telas orientação retrato de 481px até 768px de largura*/
+	@media (max-device-width: 768px) {
+		
+	}
+
+	/*para telas orientação retrato de 321px até 480px de largura*/
+	@media (max-device-width: 480px) {
+		
+	}
+
+	/*para telas orientação retrato até 320px de largura*/
+	@media (max-device-width: 320px) {
+		
+	}
+
+	/*para orientação paisagem ou para telas maiores que 1024px de largura */
+	@media (orientation: landscape), (min-device-width: 1024px) {
+		
+	}
 	</style>
 	<script>	
 	var casas = []; // array de casas
 	var casa = {}; // casa com id, poder e posse	
 	var origem; // casa de origem
-	var primeiroClick = false;
+	var primeiroClick = false; // marca a primeira selação
+	var movimentos = 0; // conta os deslocamentos de exército
+	var terrPropio = 32; // conta meus territórios
+	var terrInimigo = 32; // conta os territórios inimigos
+	var exerProprio = 0; // conta meus exércitos
+	var exerInimigo = 0; // conta os exércitos inimigos
+	var pontos; // conta meus pontos
 	
-	function setup(div) { // cria e configura o tabuleiro
+	function setup(div, spanMeu, spanInimigo, pts) { // cria e configura o tabuleiro
 		var botao;
 		var dado1;
 		var dado2;
 		var d12;
 		var numero;
-		var X0 = 10; // coordenada x inicial do tabuleiro
-		var Y0 = 150; // coordenada y inicial do tabuleirow
+		var X0 = 0; // coordenada x inicial do tabuleiro
+		var Y0 = 0; // coordenada y inicial do tabuleirow
 		var w = 50; // largura da casa
 		var h = 50; // altura da casa
 		
@@ -52,6 +97,9 @@
 					botao.style.backgroundColor = "green";
 					botao.style.color = "white";
 					casa.minha = true;
+					exerProprio += d12;
+				} else { // casas brancas
+					exerInimigo += d12;
 				}
 				
 				div.appendChild(botao);
@@ -60,10 +108,14 @@
 			
 			x = X0;
 			y += h;
-		}		
+		}
+
+		spanMeu.innerHTML = exerProprio;
+		spanInimigo.innerHTML = exerInimigo;
+		pts.innerHTML = exerProprio + terrPropio * 2 - exerInimigo - terrInimigo * 2;
 	}
 	
-	function escolherCasa(e) {
+	function escolherCasa(e) {		
 		var botao = e.target;
 		var id = botao.id.substring(4);
 		var casa = casas[id];
@@ -87,40 +139,51 @@
 			
 			primeiroClick = false;
 		}
+		
+		verificarFim();
 	}
 	
 	function movimentarExercitos(origem, destino) {
 		var botaoOrigem = document.getElementById("casa" + origem.numero);
 		var botaoDestino = document.getElementById("casa" + destino.numero);
+		var mov = document.getElementById("mov");
 		
-		if (!verificarVizinho(origem, destino)) {
+		if (movimentos < 8) {			
+			if (!verificarVizinho(origem, destino)) {
+				botaoOrigem.style.backgroundColor = "green";
+				return;
+			}
+			
+			var total = destino.poder + origem.poder;
+					
+			if (total <= 12) {
+				destino.poder += origem.poder;
+				origem.poder = 0;
+			} else {
+				destino.poder = 12;
+				origem.poder = total - 12;
+			}		
+			
 			botaoOrigem.style.backgroundColor = "green";
-			return;
-		}
-		
-		var total = destino.poder + origem.poder;
-				
-		if (total <= 12) {
-			destino.poder += origem.poder;
-			origem.poder = 0;
+			botaoOrigem.style.color = "white";
+			botaoDestino.style.backgroundColor = "green";
+			botaoDestino.style.color = "white";		
+			botaoOrigem.innerHTML = origem.poder;
+			botaoDestino.innerHTML = destino.poder;
+			mov.innerHTML = ++movimentos;
 		} else {
-			destino.poder = 12;
-			origem.poder = total - 12;
-		}
-		
-		
-		
-		botaoOrigem.style.backgroundColor = "green";
-		botaoOrigem.style.color = "white";
-		botaoDestino.style.backgroundColor = "green";
-		botaoDestino.style.color = "white";		
-		botaoOrigem.innerHTML = origem.poder;
-		botaoDestino.innerHTML = destino.poder;
+			botaoOrigem.style.backgroundColor = "green";
+		}		
 	}
 	
 	function atacarExercitos(origem, destino) {
 		var botaoOrigem = document.getElementById("casa" + origem.numero);
 		var botaoDestino = document.getElementById("casa" + destino.numero);
+		var meuE = document.getElementById("meu_exe");
+		var iniE = document.getElementById("ini_exe");
+		var meuT = document.getElementById("meu_ter");
+		var iniT = document.getElementById("ini_ter");
+		var pts = document.getElementById("pontos");
 		
 		if (!verificarVizinho(origem, destino)) {
 			botaoOrigem.style.backgroundColor = "green";
@@ -130,7 +193,9 @@
 		var resultado;
 				
 		if (destino.poder > origem.poder) { // perdeu
-			destino.poder -= origem.poder;
+			destino.poder -= origem.poder;				
+			exerProprio -= origem.poder;
+			exerInimigo -= origem.poder;
 			origem.poder = 0;
 			
 			botaoOrigem.style.backgroundColor = "green";
@@ -138,17 +203,27 @@
 			botaoOrigem.innerHTML = origem.poder;
 			botaoDestino.innerHTML = destino.poder;
 		} else { // ganhou
-			origem.poder -= destino.poder;
+			origem.poder -= destino.poder;			
+			exerProprio -= destino.poder;
+			exerInimigo -= destino.poder;
+			terrPropio++;
+			terrInimigo--;
 			destino.poder = 0;
-			destino.minha = true;			
+			destino.minha = true;
 			
 			botaoOrigem.style.backgroundColor = "green";
 			botaoOrigem.style.color = "white";
 			botaoDestino.style.backgroundColor = "green";
 			botaoDestino.style.color = "white";			
 			botaoOrigem.innerHTML = origem.poder;
-			botaoDestino.innerHTML = destino.poder;
+			botaoDestino.innerHTML = destino.poder;			
 		}
+		
+		meuE.innerHTML = exerProprio;
+		iniE.innerHTML = exerInimigo;
+		meuT.innerHTML = terrPropio;
+		iniT.innerHTML = terrInimigo;
+		pts.innerHTML = exerProprio + terrPropio * 2 - exerInimigo - terrInimigo * 2;
 	}
 	
 	function verificarVizinho(origem, destino) {
@@ -172,9 +247,27 @@
 		
 		return false;
 	}
+	
+	function verificarFim() {
+		if (terrInimigo == 0 || exerProprio == 0) {
+			for (var i = 0; i < 64; i++) {
+				document.getElementById("casa" + i).removeEventListener("click", escolherCasa, true);
+			}
+			
+			alert("Fim de jogo.");
+		}
+	}
+	
 	window.onload = function() {
 		var container = document.getElementById("container");
-		setup(container);
+		var spanMov = document.getElementById("mov"); // span com a contagem dos movimentos
+		var spanMeuExe = document.getElementById("meu_exe"); // span com a contagem dos meus exércitos
+		var spanMeuTer = document.getElementById("meu_ter"); // span com a contagem dos meus territórios
+		var spanIniExe = document.getElementById("ini_exe"); // span com a contagem dos exércitos inimigos
+		var spanIniTer = document.getElementById("ini_ter"); // span com a contagem dos territórios inimigos
+		var spanPontos = document.getElementById("pontos"); // span com a contagem de pontos
+		
+		setup(container, spanMeuExe, spanIniExe, spanPontos);
 	}
 	</script>
 	
@@ -182,7 +275,14 @@
 <body>
 	<h1>O Conquistador</h1>
 	<div id="container"></div>
-	
-	
+	<div id="infos">
+		Movimentos feitos = <span id="mov">0</span>/8<br><br>
+		Territórios próprios = <span id="meu_ter">32</span><br>			
+		Territórios inimigos = <span id="ini_ter">32</span><br>
+		Exércitos próprios = <span id="meu_exe"></span><br>
+		Exércitos inimigos = <span id="ini_exe"></span><br>		
+		_________________________<br><br>
+		Pontos = <span id="pontos"></span>
+	</div>	
 </body>
 </html>
