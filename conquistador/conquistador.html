@@ -55,14 +55,14 @@
 	var terrInimigo = 32; // conta os territórios inimigos
 	var exerProprio = 0; // conta meus exércitos
 	var exerInimigo = 0; // conta os exércitos inimigos
-	var pontos; // conta meus pontos
 	
+	// funções de configuração
 	function setup(div, spanMeu, spanInimigo, pts) { // cria e configura o tabuleiro
-		var botao;
-		var dado1;
-		var dado2;
-		var d12;
-		var numero;
+		var botao; // para gruardar os botões criados
+		// valores dos dados para as casas verdes e brancas
+		var valores1 = [2,3,4,4,5,5,5,5,6,6,6,6,6,7,7,7,7,7,7,8,8,8,8,8,9,9,9,9,10,10,11,12];
+		var valores2 = [2,3,4,4,5,5,5,5,6,6,6,6,6,7,7,7,7,7,7,8,8,8,8,8,9,9,9,9,10,10,11,12];
+		var d12; // valor dos dados
 		var X0 = 0; // coordenada x inicial do tabuleiro
 		var Y0 = 0; // coordenada y inicial do tabuleirow
 		var w = 50; // largura da casa
@@ -73,13 +73,8 @@
 		
 		for (var i = 0; i < 8; i++) { // cada linha
 			for (var j = 0; j < 8; j++) { // cada coluna
-				// valores
-				dado1 = Math.floor(Math.random() * 6 + 1);
-				dado2 = Math.floor(Math.random() * 6 + 1);
-				d12 = dado1 + dado2;
+				// criação e configuração geral das casas
 				id = i * 8 + j;
-				
-				// criação e configuração das casas				
 				botao = document.createElement("button");
 				botao.id = "casa" + id;
 				botao.style.position = "absolute";
@@ -88,20 +83,31 @@
 				botao.style.width = String(w + "px");
 				botao.style.height = String(h + "px");
 				botao.addEventListener("click", escolherCasa, true);
-				
-				casa = {numero: id, poder: d12, minha: false};
-				casas[id] = casa;
-				
+								
 				if ((i + j) % 2 == 0) { // casas verdes
+					d12 = obterPoder(valores1);
+					casa = {
+						numero: id, 
+						poder: d12, 
+						minha: true, 
+						botao: botao
+					};
 					botao.innerHTML = d12;
 					botao.style.backgroundColor = "green";
 					botao.style.color = "white";
-					casa.minha = true;
 					exerProprio += d12;
 				} else { // casas brancas
+					d12 = obterPoder(valores2);					
+					casa = {
+						numero: id, 
+						poder: d12, 
+						minha: false, 
+						botao: botao
+					};
 					exerInimigo += d12;
 				}
 				
+				casas[id] = casa;
 				div.appendChild(botao);
 				x += w;
 			}
@@ -112,9 +118,23 @@
 
 		spanMeu.innerHTML = exerProprio;
 		spanInimigo.innerHTML = exerInimigo;
-		pts.innerHTML = exerProprio + terrPropio * 2 - exerInimigo - terrInimigo * 2;
+		pts.innerHTML = exerProprio + 2 * terrPropio - exerInimigo - 2 * terrInimigo - 10 * movimentos;
 	}
 	
+	function obterPoder(valores) {
+		var k;
+		
+		do {
+			k = Math.floor(Math.random() * valores.length);					
+		} while (valores[k] == null);
+		
+		var resultado = valores[k];
+		delete valores[k];
+		
+		return resultado;
+	}
+	
+	// funções de jogo
 	function escolherCasa(e) {		
 		var botao = e.target;
 		var id = botao.id.substring(4);
@@ -144,8 +164,8 @@
 	}
 	
 	function movimentarExercitos(origem, destino) {
-		var botaoOrigem = document.getElementById("casa" + origem.numero);
-		var botaoDestino = document.getElementById("casa" + destino.numero);
+		var botaoOrigem = origem.botao;
+		var botaoDestino = destino.botao
 		var mov = document.getElementById("mov");
 		
 		if (movimentos < 8) {			
@@ -177,8 +197,8 @@
 	}
 	
 	function atacarExercitos(origem, destino) {
-		var botaoOrigem = document.getElementById("casa" + origem.numero);
-		var botaoDestino = document.getElementById("casa" + destino.numero);
+		var botaoOrigem = origem.botao;
+		var botaoDestino = destino.botao;
 		var meuE = document.getElementById("meu_exe");
 		var iniE = document.getElementById("ini_exe");
 		var meuT = document.getElementById("meu_ter");
@@ -223,7 +243,7 @@
 		iniE.innerHTML = exerInimigo;
 		meuT.innerHTML = terrPropio;
 		iniT.innerHTML = terrInimigo;
-		pts.innerHTML = exerProprio + terrPropio * 2 - exerInimigo - terrInimigo * 2;
+		pts.innerHTML = exerProprio + 2 * terrPropio - exerInimigo - 2 * terrInimigo - 10 * movimentos;
 	}
 	
 	function verificarVizinho(origem, destino) {
@@ -249,7 +269,7 @@
 	}
 	
 	function verificarFim() {
-		if (terrInimigo == 0 || exerProprio == 0) {
+		if (terrInimigo == 0) {
 			for (var i = 0; i < 64; i++) {
 				document.getElementById("casa" + i).removeEventListener("click", escolherCasa, true);
 			}
