@@ -8,11 +8,18 @@
 	<style>
 		/*aplica opcionalmente as propriedades padrões*/
 		body {
-			text-align: center;
 			background-color: rgb(127, 225, 255);
 		}
 
-		table {
+		.infos {
+			line-height: 80%;
+		}
+
+		span {
+			margin-right: 5px;
+		}
+
+		.controles {
 			position: absolute;
 			top: 50%;
 			left: 50%;
@@ -27,37 +34,56 @@
 			width: auto;
 			overflow: hidden;
 			border: solid blue;
-			background-color:azure;
+			background-color: azure;
 		}
 
-		button {
+		.botao-grande {
 			width: 100px;
 			height: 100px;
 			font-size: 75px;
 		}
 
+		.oculto {
+			display: none;
+		}
+
+		.exibe {
+			display: inline;
+		}
 
 		/*para telas orientação retrato de 993px até 1024px de largura*/
-		@media (max-device-width: 1024px) {}
+		@media (max-device-width: 1024px) {
+			.teclado {
+				display: none;
+			}
+		}
 
-		/*para telas orientação retrato de 769px até 992px de largura*/
+		/*para telas orientação retrato de 541px até 992px de largura*/
 		@media (max-device-width: 991px) {}
 
-		/*para telas orientação retrato de 481px até 768px de largura*/
-		@media (max-device-width: 768px) {}
-
-		/*para telas orientação retrato de 321px até 480px de largura*/
-		@media (max-device-width: 480px) {
-			table {
+		/*para telas orientação retrato de 3911px até 540px de largura*/
+		@media (max-device-width: 540px) {
+			.controles {
 				top: 110%;
+				transform: translate(-25%, -50%);
+			}
+		}
+
+		/*para telas orientação retrato de 321px até 390px de largura*/
+		@media (max-device-width: 390px) {
+			.controles {
+				top: 120%;
 				transform: translate(-25%, -50%);
 			}
 		}
 
 		/*para telas orientação retrato até 320px de largura*/
 		@media (max-device-width: 320px) {
-			table {
-				top: 110%;
+			.infos {
+				line-height: normal;
+			}
+
+			.controles {
 				transform: translate(-10%, 0%);
 			}
 		}
@@ -65,14 +91,26 @@
 		/*para orientação paisagem ou para telas maiores que 1024px de largura */
 		@media (orientation: landscape),
 		(min-device-width: 1024px) {
+			body {
+				text-align: center;
+			}
+
+			.infos {
+				line-height: 40%;
+			}
+
 			pre {
 				position: absolute;
-				top: 50%;
+				top: 55%;
 				left: 50%;
 				transform: translate(-50%, -50%);
 			}
 
-			table {
+			.controles {
+				top: 85%;
+			}
+
+			.botoes {
 				display: none;
 			}
 		}
@@ -81,26 +119,48 @@
 </head>
 
 <body>
-	<h1>Caça ao Tesouro (ASCII)</h1>
-	<p>Topo do quadrante (coord. surerior esquerda): <span id="quadrante">(0, 0)</span></p>
-	<pre class="central"></pre>
-	<table class="central">
-		<tr>
-			<td>
-			<td><button id="u">&uarr;</button>
-			<td>
-		<tr>
-			<td><button id="l">&larr;</button>
-			<td>
-			<td><button id="r">&rarr;</button>
-		<tr>
-			<td>
-			<td><button id="d">&darr;</button>
-			<td>
-	</table>
+	<div class="infos">
+		<h1>Caça ao Tesouro (ASCII)</h1>
+		<h3>Topo do quadrante: <span id="quadrante">(0, 0)</span></h3>
+		<h3>Tesouros encontrados: 
+			<span id="tesouros">0</span>
+			<button id="novo1" class="oculto">Novo Jogo</button>
+		</h3>
+		<h3>Pontos de vida: 
+			<span id="vida">O O O O</span>
+			<button id="novo2" class="oculto">Novo Jogo</button>
+		</h3>
+		<h3 id="radar">Temperatura: </h3>
+	</div>
+	<pre></pre>
+	<div class="controles">
+		<h3 class="teclado">Use as teclas direcionais do teclado para mover o personagem</h3>
+		<table class="botoes">
+			<tr>
+				<td>
+				<td><button id="u" class="botao-grande">&uarr;</button>
+				<td>
+			<tr>
+				<td><button id="l" class="botao-grande">&larr;</button>
+				<td>
+				<td><button id="r" class="botao-grande">&rarr;</button>
+			<tr>
+				<td>
+				<td><button id="d" class="botao-grande">&darr;</button>
+				<td>
+		</table>
+	</div>
 
 	<script>
+		//==========================================variáveis globais============================================//
+
+		// elementos html
 		const quadrante = document.querySelector("#quadrante");
+		const tesouros = document.querySelector("#tesouros");
+		const vida = document.querySelector("#vida");
+		const radar= document.querySelector("#radar");
+		const btNovo1 = document.querySelector("#novo1");
+		const btNovo2 = document.querySelector("#novo2");
 		const pre = document.querySelector("pre");
 		const btL = document.querySelector("#l");
 		const btR = document.querySelector("#r");
@@ -117,21 +177,16 @@
 		const TESOURO = 2; // flag dos tesouros		
 		const PAREDE = 3; // flag das paredes
 		const PERSONAGEM = 4; // flag do personagem
-		
+		const MAX_TESOURO = 4; // quantidade máxima de tesouros no mapa;
+		const MAX_ARMADILHA = 16; // quantidade máxima de armadilhas no mapa;
+		let numVida = 4; // contagem dos pontos de vida
+		let numTesouros = 0; // contagem dos tesouros encontrados
+		var itens = []; // guarda as informações dos tesouros no mapa;
+
+		//==========================================configuração inicial============================================//
 
 		// preenche a matriz do mapa
-		for (let i = 0; i < max_lin; i++) {
-			mapa[i] = [];
-			for (let j = 0; j < max_col; j++) {
-				const k = Math.random();
-
-				if (k < 0.3 && i != 0 && i != max_lin && j != 0 && j != max_col) {
-					mapa[i][j] = PAREDE;
-				} else {
-					mapa[i][j] = VAZIO;
-				}
-			}
-		}
+		preencerMapa();
 
 		// inclui o personagem na posição inicial
 		mapa[linha][coluna] = PERSONAGEM;
@@ -139,84 +194,29 @@
 		// imprime o mapa
 		imprimirMapa(linha, coluna);
 
+		//==========================================configuração dos eventos============================================//
+
 		// permite o controle por teclado
-		window.addEventListener("keydown", (e) => {
-			//e.preventDefault();
-			const tecla = e.key;
-			console.log(tecla)
+		window.addEventListener("keydown", mover);
 
-			switch (tecla) {
-				case "ArrowLeft": // esquerda
-					if ((coluna - 1) >= 0 && mapa[linha][coluna - 1] == VAZIO) {
-						mapa[linha][coluna] = VAZIO;
-						coluna -= 1;
-						mapa[linha][coluna] = PERSONAGEM;
-					}
-					break;
-				case "ArrowRight": // direita
-					if ((coluna + 1) < max_col && mapa[linha][coluna + 1] == VAZIO) {
-						mapa[linha][coluna] = VAZIO;
-						coluna += 1;
-						mapa[linha][coluna] = PERSONAGEM;
-					}
-					break;
-				case "ArrowUp": // cima
-					if ((linha - 1) >= 0 && mapa[linha - 1][coluna] == VAZIO) {
-						mapa[linha][coluna] = VAZIO;
-						linha -= 1;
-						mapa[linha][coluna] = PERSONAGEM;
-					}
-					break;
-				case "ArrowDown": // baixo
-					if ((linha + 1) < max_lin && mapa[linha + 1][coluna] == VAZIO) {
-						mapa[linha][coluna] = VAZIO;
-						linha += 1;
-						mapa[linha][coluna] = PERSONAGEM;
-					}
-			}
+		// permitir controle por botões
+		btL.addEventListener("click", moverEsquerda);
 
-			imprimirMapa(linha, coluna);
+		btR.addEventListener("click", moverDireita);
+
+		btU.addEventListener("click", moverCima);
+
+		btD.addEventListener("click", moverBaixo);
+
+		btNovo1.addEventListener("click", () => {
+			location.reload();
 		});
 
-		btL.addEventListener("click", () => {
-			if ((coluna - 1) >= 0 && mapa[linha][coluna - 1] == VAZIO) {
-				mapa[linha][coluna] = VAZIO;
-				coluna -= 1;
-				mapa[linha][coluna] = PERSONAGEM;
-			}
-
-			imprimirMapa(linha, coluna);
+		btNovo2.addEventListener("click", () => {
+			location.reload();
 		});
 
-		btR.addEventListener("click", () => {
-			if ((coluna + 1) < max_col && mapa[linha][coluna + 1] == VAZIO) {
-				mapa[linha][coluna] = VAZIO;
-				coluna += 1;
-				mapa[linha][coluna] = PERSONAGEM;
-			}
-
-			imprimirMapa(linha, coluna);
-		});
-
-		btU.addEventListener("click", () => {
-			if ((linha - 1) >= 0 && mapa[linha - 1][coluna] == VAZIO) {
-				mapa[linha][coluna] = VAZIO;
-				linha -= 1;
-				mapa[linha][coluna] = PERSONAGEM;
-			}
-
-			imprimirMapa(linha, coluna);
-		});
-
-		btD.addEventListener("click", () => {
-			if ((linha + 1) < max_lin && mapa[linha + 1][coluna] == VAZIO) {
-				mapa[linha][coluna] = VAZIO;
-				linha += 1;
-				mapa[linha][coluna] = PERSONAGEM;
-			}
-
-			imprimirMapa(linha, coluna);
-		});
+		//==========================================funções úteis============================================//
 
 		function imprimirMapa(l, c) {
 			const qx = l > max_lin / 2 - 1 ? 16 : 0;
@@ -231,7 +231,7 @@
 						case TESOURO: display += " "; break; // tesouro						
 						case PAREDE: display += "<font style='color: black'>#</font>"; break; // parede
 						case PERSONAGEM: display += "<font style='color: red'>@</font>"; // personagem
-					}					
+					}
 				}
 
 				display += "\n";
@@ -239,6 +239,167 @@
 
 			pre.innerHTML = display;
 			quadrante.innerText = `(${qx}, ${qy})`;
+			calcularTemperatura(linha, coluna);
+		}
+
+		function preencerMapa() {
+			for (let i = 0; i < max_lin; i++) {
+				mapa[i] = [];
+				for (let j = 0; j < max_col; j++) {
+					const k = Math.random();
+
+					if (k < 0.3 && i != 0 && i != max_lin && j != 0 && j != max_col) {
+						mapa[i][j] = PAREDE;
+					} else {
+						mapa[i][j] = VAZIO;
+					}
+				}
+			}
+
+			colocarComponente(ARMADILHA, MAX_ARMADILHA);
+			colocarComponente(TESOURO, MAX_TESOURO);
+		}
+
+		function colocarComponente(tipo, quantidade) {
+			for (let i = 0; i < quantidade; i++) {
+				let l = Math.floor(Math.random() * max_lin);
+				let c = Math.floor(Math.random() * max_col);
+
+				while (mapa[l][c] != VAZIO) {
+					l = Math.floor(Math.random() * max_lin);
+					c = Math.floor(Math.random() * max_col);
+				}
+
+				mapa[l][c] = tipo;
+
+				if (tipo == TESOURO) {
+					itens.push({
+						linha: l, 
+						coluna: c, 
+						distancia: undefined,
+						encontrado: false
+					});
+				}
+			}
+		}
+
+		function processarEncontro(l, c) {
+			if (mapa[l][c] == ARMADILHA) {
+				alert("Você caiu numa armadilha");
+				numVida--;
+
+				if (numVida == 0) {
+					vida.innerText = "Game Over!";
+					btNovo2.className = "exibe";
+					window.removeEventListener("keydown", mover);
+					btD.removeEventListener("click", moverBaixo);
+					btU.removeEventListener("click", moverCima);
+					btL.removeEventListener("click", moverEsquerda);
+					btR.removeEventListener("click", moverDireita);
+					pre.style.backgroundColor = "red";
+				} else {
+					let display = "";
+
+					for (let i = 0; i < numVida; i++) {
+						display += "O ";
+					}
+
+					vida.innerText = display;
+				}
+
+			} else if (mapa[l][c] == TESOURO) {
+				alert("Você encontrou um tesouro");
+				numTesouros++;
+
+				if (numTesouros == MAX_TESOURO) {
+					tesouros.innerText = `Você encontrou os ${MAX_TESOURO} tesouros`;
+					btNovo1.className = "exibe";
+					radar.innerText = `Radar: --`;
+				} else {
+					tesouros.innerText = numTesouros;
+				}
+
+				itens.shift();
+			}
+		}
+
+		function calcularTemperatura(l, c) {
+			for (let i = 0; i < itens.length; i++) {
+				const dx = l - itens[i].linha;
+				const dy = c - itens[i].coluna;
+				const d2 = dx * dx + dy * dy;
+				
+				itens[i].distancia = d2;
+			}
+
+			itens.sort((a, b) => a.distancia - b.distancia);
+			const proximo = itens[0];
+
+			radar.innerText = `Radar: ${Math.round(Math.sqrt(proximo.distancia))}`;
+		}
+
+		// funções de movimentação
+		function mover(e) {
+			const tecla = e.key;
+			console.log(tecla)
+
+			switch (tecla) {
+				case "ArrowLeft": // esquerda
+					moverEsquerda();
+					break;
+				case "ArrowRight": // direita
+					moverDireita();
+					break;
+				case "ArrowUp": // cima
+					moverCima();
+					break;
+				case "ArrowDown": // baixo
+					moverBaixo();
+			}
+		}
+
+		function moverDireita() {
+			if ((coluna + 1) < max_col && mapa[linha][coluna + 1] != PAREDE) {
+				mapa[linha][coluna] = VAZIO;
+				coluna += 1;
+				processarEncontro(linha, coluna);
+				mapa[linha][coluna] = PERSONAGEM;
+			}
+
+			imprimirMapa(linha, coluna);
+		}
+
+		function moverEsquerda() {
+			if ((coluna - 1) >= 0 && mapa[linha][coluna - 1] != PAREDE) {
+				mapa[linha][coluna] = VAZIO;
+				coluna -= 1;
+				processarEncontro(linha, coluna);
+				mapa[linha][coluna] = PERSONAGEM;
+			}
+
+			imprimirMapa(linha, coluna);
+		}
+
+		function moverCima() {
+			if ((linha - 1) >= 0 && mapa[linha - 1][coluna] != PAREDE) {
+				mapa[linha][coluna] = VAZIO;
+				linha -= 1;
+				processarEncontro(linha, coluna);
+				mapa[linha][coluna] = PERSONAGEM;
+			}
+
+			imprimirMapa(linha, coluna);
+		}
+
+		function moverBaixo() {
+			if ((linha + 1) < max_lin && mapa[linha + 1][coluna] != PAREDE) {
+				mapa[linha][coluna] = VAZIO;
+				linha += 1;
+				processarEncontro(linha, coluna);
+				mapa[linha][coluna] = PERSONAGEM;
+			}
+
+			imprimirMapa(linha, coluna);
 		}
 	</script>
 </body>
