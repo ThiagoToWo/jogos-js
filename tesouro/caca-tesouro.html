@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<style>
+		/*aplica opcionalmente as propriedades padrões*/
+		body {
+			text-align: center;
+			background-color: rgb(127, 225, 255);
+		}
+
+		table {
+			position: absolute;
+			top: 50%;
+			left: 50%;
+			transform: translate(-50%, 50%);
+		}
+
+		pre {
+			position: absolute;
+			line-height: 26px;
+			font-size: 30px;
+			padding: 2px;
+			width: auto;
+			overflow: hidden;
+			border: solid blue;
+			background-color:azure;
+		}
+
+		button {
+			width: 100px;
+			height: 100px;
+			font-size: 75px;
+		}
+
+
+		/*para telas orientação retrato de 993px até 1024px de largura*/
+		@media (max-device-width: 1024px) {}
+
+		/*para telas orientação retrato de 769px até 992px de largura*/
+		@media (max-device-width: 991px) {}
+
+		/*para telas orientação retrato de 481px até 768px de largura*/
+		@media (max-device-width: 768px) {}
+
+		/*para telas orientação retrato de 321px até 480px de largura*/
+		@media (max-device-width: 480px) {
+			table {
+				top: 110%;
+				transform: translate(-25%, -50%);
+			}
+		}
+
+		/*para telas orientação retrato até 320px de largura*/
+		@media (max-device-width: 320px) {
+			table {
+				top: 110%;
+				transform: translate(-10%, 0%);
+			}
+		}
+
+		/*para orientação paisagem ou para telas maiores que 1024px de largura */
+		@media (orientation: landscape),
+		(min-device-width: 1024px) {
+			pre {
+				position: absolute;
+				top: 50%;
+				left: 50%;
+				transform: translate(-50%, -50%);
+			}
+
+			table {
+				display: none;
+			}
+		}
+	</style>
+	<title>Caça-Tesouro (ASCII)</title>
+</head>
+
+<body>
+	<h1>Caça ao Tesouro (ASCII)</h1>
+	<p>Topo do quadrante (coord. surerior esquerda): <span id="quadrante">(0, 0)</span></p>
+	<pre class="central"></pre>
+	<table class="central">
+		<tr>
+			<td>
+			<td><button id="u">&uarr;</button>
+			<td>
+		<tr>
+			<td><button id="l">&larr;</button>
+			<td>
+			<td><button id="r">&rarr;</button>
+		<tr>
+			<td>
+			<td><button id="d">&darr;</button>
+			<td>
+	</table>
+
+	<script>
+		const quadrante = document.querySelector("#quadrante");
+		const pre = document.querySelector("pre");
+		const btL = document.querySelector("#l");
+		const btR = document.querySelector("#r");
+		const btU = document.querySelector("#u");
+		const btD = document.querySelector("#d");
+
+		const mapa = []; // matriz mapa
+		const max_lin = 32; // limite máximo de linhas da matriz
+		const max_col = 64; // limite máximo de colunas da matriz
+		let linha = 0; // linha posição do personagem
+		let coluna = 0; // coluna posição do personagem
+		const VAZIO = 0; // flag dos espaços caminháveis
+		const ARMADILHA = 1; // flag das armadilhas
+		const TESOURO = 2; // flag dos tesouros		
+		const PAREDE = 3; // flag das paredes
+		const PERSONAGEM = 4; // flag do personagem
+		
+
+		// preenche a matriz do mapa
+		for (let i = 0; i < max_lin; i++) {
+			mapa[i] = [];
+			for (let j = 0; j < max_col; j++) {
+				const k = Math.random();
+
+				if (k < 0.3 && i != 0 && i != max_lin && j != 0 && j != max_col) {
+					mapa[i][j] = PAREDE;
+				} else {
+					mapa[i][j] = VAZIO;
+				}
+			}
+		}
+
+		// inclui o personagem na posição inicial
+		mapa[linha][coluna] = PERSONAGEM;
+
+		// imprime o mapa
+		imprimirMapa(linha, coluna);
+
+		// permite o controle por teclado
+		window.addEventListener("keydown", (e) => {
+			//e.preventDefault();
+			const tecla = e.key;
+			console.log(tecla)
+
+			switch (tecla) {
+				case "ArrowLeft": // esquerda
+					if ((coluna - 1) >= 0 && mapa[linha][coluna - 1] == VAZIO) {
+						mapa[linha][coluna] = VAZIO;
+						coluna -= 1;
+						mapa[linha][coluna] = PERSONAGEM;
+					}
+					break;
+				case "ArrowRight": // direita
+					if ((coluna + 1) < max_col && mapa[linha][coluna + 1] == VAZIO) {
+						mapa[linha][coluna] = VAZIO;
+						coluna += 1;
+						mapa[linha][coluna] = PERSONAGEM;
+					}
+					break;
+				case "ArrowUp": // cima
+					if ((linha - 1) >= 0 && mapa[linha - 1][coluna] == VAZIO) {
+						mapa[linha][coluna] = VAZIO;
+						linha -= 1;
+						mapa[linha][coluna] = PERSONAGEM;
+					}
+					break;
+				case "ArrowDown": // baixo
+					if ((linha + 1) < max_lin && mapa[linha + 1][coluna] == VAZIO) {
+						mapa[linha][coluna] = VAZIO;
+						linha += 1;
+						mapa[linha][coluna] = PERSONAGEM;
+					}
+			}
+
+			imprimirMapa(linha, coluna);
+		});
+
+		btL.addEventListener("click", () => {
+			if ((coluna - 1) >= 0 && mapa[linha][coluna - 1] == VAZIO) {
+				mapa[linha][coluna] = VAZIO;
+				coluna -= 1;
+				mapa[linha][coluna] = PERSONAGEM;
+			}
+
+			imprimirMapa(linha, coluna);
+		});
+
+		btR.addEventListener("click", () => {
+			if ((coluna + 1) < max_col && mapa[linha][coluna + 1] == VAZIO) {
+				mapa[linha][coluna] = VAZIO;
+				coluna += 1;
+				mapa[linha][coluna] = PERSONAGEM;
+			}
+
+			imprimirMapa(linha, coluna);
+		});
+
+		btU.addEventListener("click", () => {
+			if ((linha - 1) >= 0 && mapa[linha - 1][coluna] == VAZIO) {
+				mapa[linha][coluna] = VAZIO;
+				linha -= 1;
+				mapa[linha][coluna] = PERSONAGEM;
+			}
+
+			imprimirMapa(linha, coluna);
+		});
+
+		btD.addEventListener("click", () => {
+			if ((linha + 1) < max_lin && mapa[linha + 1][coluna] == VAZIO) {
+				mapa[linha][coluna] = VAZIO;
+				linha += 1;
+				mapa[linha][coluna] = PERSONAGEM;
+			}
+
+			imprimirMapa(linha, coluna);
+		});
+
+		function imprimirMapa(l, c) {
+			const qx = l > max_lin / 2 - 1 ? 16 : 0;
+			const qy = c > max_col / 2 - 1 ? 32 : 0;
+			let display = "";
+
+			for (let i = qx; i < qx + max_lin / 2; i++) {
+				for (let j = qy; j < qy + max_col / 2; j++) {
+					switch (mapa[i][j]) {
+						case VAZIO: // caminho
+						case ARMADILHA: // armadilha
+						case TESOURO: display += " "; break; // tesouro						
+						case PAREDE: display += "<font style='color: black'>#</font>"; break; // parede
+						case PERSONAGEM: display += "<font style='color: red'>@</font>"; // personagem
+					}					
+				}
+
+				display += "\n";
+			}
+
+			pre.innerHTML = display;
+			quadrante.innerText = `(${qx}, ${qy})`;
+		}
+	</script>
+</body>
+
+</html>
