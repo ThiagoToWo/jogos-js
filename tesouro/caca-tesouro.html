@@ -124,11 +124,11 @@
 		<h1>Caça ao Tesouro - ascii</h1>
 		<h3>Topo do quadrante: <span id="quadrante">(0, 0)</span></h3>
 		<h3>Tesouros encontrados:
-			<span id="tesouros">0</span>
+			<span id="tesouros"></span>
 			<button id="novo1" class="oculto">Novo Jogo</button>
 		</h3>
 		<h3>Pontos de vida:
-			<span id="vida">O O O O</span>
+			<span id="vida">&#10084;&#65039; &#10084;&#65039; &#10084;&#65039; &#10084;&#65039;</span>
 			<button id="novo2" class="oculto">Novo Jogo</button>
 		</h3>
 		<h3 id="radar">Temperatura: </h3>
@@ -179,7 +179,7 @@
 		const PAREDE = 3; // flag das paredes
 		const PERSONAGEM = 4; // flag do personagem
 		const MAX_TESOURO = 4; // quantidade máxima de tesouros no mapa;
-		const MAX_ARMADILHA = 16; // quantidade máxima de armadilhas no mapa;
+		const MAX_ARMADILHA = 8; // quantidade máxima de armadilhas no mapa;
 		let numVida = 4; // contagem dos pontos de vida
 		let numTesouros = 0; // contagem dos tesouros encontrados
 		var itens = []; // guarda as informações dos tesouros no mapa;
@@ -239,7 +239,7 @@
 			}
 
 			pre.innerHTML = display;
-			quadrante.innerText = `(${qx}, ${qy})`;
+			quadrante.innerHTML = `(${qx}, ${qy})`;
 			calcularTemperatura(linha, coluna);
 		}
 
@@ -290,7 +290,7 @@
 
 				if (numVida == 0) {
 					alert("Você caiu em um buraco profundo!!");
-					vida.innerText = "Game Over!";
+					vida.innerHTML = "Game Over!";
 					btNovo2.className = "exibe";
 					window.removeEventListener("keydown", mover);
 					btD.disabled = true;
@@ -303,10 +303,10 @@
 					let display = "";
 
 					for (let i = 0; i < numVida; i++) {
-						display += "O ";
+						display += "&#10084;&#65039; ";
 					}
 
-					vida.innerText = display;
+					vida.innerHTML = display;
 				}
 
 			} else if (mapa[l][c] == TESOURO) {				
@@ -319,12 +319,18 @@
 					btU.disabled = true;
 					btL.disabled = true;
 					btR.disabled = true;
-					tesouros.innerText = `Você encontrou os ${MAX_TESOURO} tesouros`;
+					tesouros.innerHTML = `Você encontrou os ${MAX_TESOURO} tesouros`;
 					btNovo1.className = "exibe";
-					radar.innerText = `Radar: --`;
+					radar.innerHTML = `Radar: --`;
 				} else {
 					alert("Você encontrou um dos tesouros");
-					tesouros.innerText = numTesouros;
+					let display = "";
+
+					for (let i = 0; i < numTesouros; i++) {
+						display += "&#128176; ";
+					}
+
+					tesouros.innerHTML = display;
 				}
 
 				itens.shift();
@@ -344,22 +350,22 @@
 			const proximo = Math.round(Math.sqrt(itens[0].distancia));
 			let temepratura;
 
-			//0 < fogo < 9 < muito quente < 18 < quente < 27 < frio < 36 < muito frio < 45 < congelado
-			if (proximo > 45) {
+			//0 < fogo < 4 < muito quente < 16 < quente < 28 < frio < 40 < muito frio < 44 < congelado
+			if (proximo > 44) {
 				temepratura = "Está congelado!"
-			} else if (proximo > 36) {
+			} else if (proximo > 40) {
 				temepratura = "Está muito frio!";
-			} else if (proximo > 27) {
+			} else if (proximo > 28) {
 				temepratura = "Está frio";
-			} else if (proximo > 18) {
+			} else if (proximo > 16) {
 				temepratura = "Está quente";
-			} else if (proximo > 9) {
+			} else if (proximo > 4) {
 				temepratura = "Está muito quente!";
 			} else {
 				temepratura = "Está pegando fogo!!";
 			}
 
-			radar.innerText = `Temperatura: ${temepratura}`;
+			radar.innerHTML = `Temperatura: ${temepratura}`;
 		}
 
 		// funções de movimentação
