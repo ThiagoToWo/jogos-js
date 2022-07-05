@@ -13,6 +13,7 @@
 
 		.infos {
 			line-height: 80%;
+			width: 100%;
 		}
 
 		span {
@@ -120,13 +121,13 @@
 
 <body>
 	<div class="infos">
-		<h1>Caça ao Tesouro (ASCII)</h1>
+		<h1>Caça ao Tesouro - ascii</h1>
 		<h3>Topo do quadrante: <span id="quadrante">(0, 0)</span></h3>
-		<h3>Tesouros encontrados: 
+		<h3>Tesouros encontrados:
 			<span id="tesouros">0</span>
 			<button id="novo1" class="oculto">Novo Jogo</button>
 		</h3>
-		<h3>Pontos de vida: 
+		<h3>Pontos de vida:
 			<span id="vida">O O O O</span>
 			<button id="novo2" class="oculto">Novo Jogo</button>
 		</h3>
@@ -158,7 +159,7 @@
 		const quadrante = document.querySelector("#quadrante");
 		const tesouros = document.querySelector("#tesouros");
 		const vida = document.querySelector("#vida");
-		const radar= document.querySelector("#radar");
+		const radar = document.querySelector("#radar");
 		const btNovo1 = document.querySelector("#novo1");
 		const btNovo2 = document.querySelector("#novo2");
 		const pre = document.querySelector("pre");
@@ -274,8 +275,8 @@
 
 				if (tipo == TESOURO) {
 					itens.push({
-						linha: l, 
-						coluna: c, 
+						linha: l,
+						coluna: c,
 						distancia: undefined,
 						encontrado: false
 					});
@@ -285,7 +286,7 @@
 
 		function processarEncontro(l, c) {
 			if (mapa[l][c] == ARMADILHA) {
-				alert("Você caiu numa armadilha");
+				alert("Você se feriu em armadilha!!");
 				numVida--;
 
 				if (numVida == 0) {
@@ -307,15 +308,16 @@
 					vida.innerText = display;
 				}
 
-			} else if (mapa[l][c] == TESOURO) {
-				alert("Você encontrou um tesouro");
+			} else if (mapa[l][c] == TESOURO) {				
 				numTesouros++;
 
 				if (numTesouros == MAX_TESOURO) {
+					alert("Você o último tesouros perdido!");
 					tesouros.innerText = `Você encontrou os ${MAX_TESOURO} tesouros`;
 					btNovo1.className = "exibe";
 					radar.innerText = `Radar: --`;
 				} else {
+					alert("Você encontrou um dos tesouros");
 					tesouros.innerText = numTesouros;
 				}
 
@@ -328,14 +330,30 @@
 				const dx = l - itens[i].linha;
 				const dy = c - itens[i].coluna;
 				const d2 = dx * dx + dy * dy;
-				
+
 				itens[i].distancia = d2;
 			}
 
 			itens.sort((a, b) => a.distancia - b.distancia);
-			const proximo = itens[0];
+			const proximo = Math.round(Math.sqrt(itens[0].distancia));
+			let temepratura;
 
-			radar.innerText = `Radar: ${Math.round(Math.sqrt(proximo.distancia))}`;
+			//0 < fogo < 9 < muito quente < 18 < quente < 27 < frio < 36 < muito frio < 45 < congelado
+			if (proximo > 45) {
+				temepratura = "Está congelado!"
+			} else if (proximo > 36) {
+				temepratura = "Está muito frio!";
+			} else if (proximo > 27) {
+				temepratura = "Está frio";
+			} else if (proximo > 18) {
+				temepratura = "Está quente";
+			} else if (proximo > 9) {
+				temepratura = "Está muito quente!";
+			} else {
+				temepratura = "Está pegando fogo!!";
+			}
+
+			radar.innerText = `Temperatura: ${temepratura}`;
 		}
 
 		// funções de movimentação
