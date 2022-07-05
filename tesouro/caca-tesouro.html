@@ -285,20 +285,21 @@
 		}
 
 		function processarEncontro(l, c) {
-			if (mapa[l][c] == ARMADILHA) {
-				alert("Você se feriu em armadilha!!");
+			if (mapa[l][c] == ARMADILHA) {				
 				numVida--;
 
 				if (numVida == 0) {
+					alert("Você caiu em um buraco profundo!!");
 					vida.innerText = "Game Over!";
 					btNovo2.className = "exibe";
 					window.removeEventListener("keydown", mover);
-					btD.removeEventListener("click", moverBaixo);
-					btU.removeEventListener("click", moverCima);
-					btL.removeEventListener("click", moverEsquerda);
-					btR.removeEventListener("click", moverDireita);
+					btD.disabled = true;
+					btU.disabled = true;
+					btL.disabled = true;
+					btR.disabled = true;
 					pre.style.backgroundColor = "red";
 				} else {
+					alert("Você se feriu em uma armadilha!!");
 					let display = "";
 
 					for (let i = 0; i < numVida; i++) {
@@ -312,7 +313,12 @@
 				numTesouros++;
 
 				if (numTesouros == MAX_TESOURO) {
-					alert("Você o último tesouros perdido!");
+					alert("Você encontrou o último tesouro perdido!");
+					window.removeEventListener("keydown", mover);
+					btD.disabled = true;
+					btU.disabled = true;
+					btL.disabled = true;
+					btR.disabled = true;
 					tesouros.innerText = `Você encontrou os ${MAX_TESOURO} tesouros`;
 					btNovo1.className = "exibe";
 					radar.innerText = `Radar: --`;
