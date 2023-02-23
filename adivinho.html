@@ -1,0 +1,95 @@
+<!doctype html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<style>
+	body {
+		text-align: center;
+		background-color: #dff;
+	}
+
+	.fonte-grande {
+		font-size: 200px;
+	}
+
+	button {
+		margin: 5px;
+	}
+	</style>
+</head>
+<body>
+	<h1>O Adivinho Binário</h1>
+	<p>
+		Pense em um número de 0 a 100 e eu vou descobrir qual é em no máximo 7 tentativas!
+	</p>
+	<button id="iniciar">Começar</button>
+	<div id="palpite" class="fonte-grande"></div>
+	<div id="tentativas"></div><br><br>
+	
+	<script>
+		btIniciar = document.querySelector("#iniciar");
+		dvPalpite = document.querySelector("#palpite");
+		dvTentativas = document.querySelector("#tentativas");
+
+		let btMenor;
+		let btIgual;
+		let btMaior;
+
+		let med = 50;
+		let aux = 50;
+		let tentativas = 0;
+
+		function chutarMenor() {
+			aux = Math.ceil(aux / 2);
+			med = (med - aux < 0) ? 0 : med - aux;
+			dvPalpite.innerText = med;
+			dvTentativas.innerText = ++tentativas + " tentativas";
+
+			if (med == 0 || tentativas == 7) {
+				btMenor.disabled = true;
+				btMaior.disabled = true;
+			}
+		}
+
+		function comemorarVitoria() {
+			alert("Acertei com " + tentativas + " tentativa(s)!");
+			window.location.reload();
+		}
+
+		function chutarMaior() {
+			aux = Math.ceil(aux / 2);
+			med = (med + aux > 100) ? 100 : med + aux;
+			dvPalpite.innerText = med;
+			dvTentativas.innerText = ++tentativas + " tentativas";
+
+			if (med == 100 || tentativas == 7) {
+				btMenor.disabled = true;
+				btMaior.disabled = true;
+			}
+		}
+
+		btIniciar.addEventListener("click", () => {
+			btIniciar.disabled = true;
+			dvPalpite.innerText = med;
+			dvTentativas.innerText = ++tentativas + " tentativa";
+
+			btMenor = document.createElement("button");
+			btIgual = document.createElement("button");
+			btMaior = document.createElement("button");
+
+			btMenor.innerHTML = "É menor";
+			btIgual.innerHTML = "Acertou";
+			btMaior.innerHTML = "É maior";
+
+			btMenor.addEventListener("click", chutarMenor);
+			btIgual.addEventListener("click", comemorarVitoria);
+			btMaior.addEventListener("click", chutarMaior);
+
+			document.body.appendChild(btMenor);
+			document.body.appendChild(btIgual);
+			document.body.appendChild(btMaior);
+		});
+	</script>
+</body>
+</html>
