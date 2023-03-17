@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>O Náufrago</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div id="dvTudo">
+        <h1>O Náufrago</h1>
+        <p>Sobreviva o máximo possível racionando água e alimento. Tente encontrar terra firme.</p>
+        <div id="dvTempo">
+            Dia <span id="spTempo"></span> - 
+            Clima <span id=spClima></span>
+            <span id="spMeridiano"></span>
+        </div>
+        <div id="dvAtributos">
+            Energia = <span id="spEnergia">10</span><br>
+            Comida = <span id="spComida">3</span><br>
+            Água = <span id="spAgua">5</span><br>
+            Resistência à fome = <span id="spFome"></span> dias<br>
+            Resistência à sede = <span id="spSede"></span> dias<br>
+        </div>
+        <form>
+            Digite um comando: 
+            <input type="text" id="inComando">
+            <input type="submit" value="Executar">
+        </form>
+        <div id="dvMensagens">
+            <h3>Mensagem:</h3>
+            <p id="pMensagem">O texto da mensagem vai aqui</p>
+        </div>
+    </div>
+    <script src="js/script.js"></script>
+</body>
+</html>

@@ -1,0 +1,23 @@
+body {
+    background-color: #ccc;
+}
+
+#dvTudo {
+    width: 80%;
+    height: 600px;
+    background-color: #fff;
+    margin: 0 auto;
+}
+
+h1,
+p {
+    text-align: center;
+}
+
+div,
+form {
+    border: solid;
+    margin: 10px 5px;
+    padding: 5px 10px;
+    background-color: #cf9;
+}
