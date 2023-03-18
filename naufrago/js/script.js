@@ -28,7 +28,7 @@ const FatorClima = { // fator de gasto de energia para pesca e locomoção em ca
     "chuvoso": 0.2,
     "tempestade": 0.3
 }
-const DIA = 0.2 // tempo de um dia em minutos
+const DIA = 5 // tempo de um dia em minutos
 const MINUTOS = 1000 * 60; // milissegundos para minutos
 
 // Preencher mapa
@@ -70,16 +70,16 @@ form.addEventListener("submit", (e) => {
     const comando = form.inComando.value;
 
     switch (comando) {
-        case "norte": 
+        case "norte":
             locomoverPara("norte");
             break;
-        case "sul": 
+        case "sul":
             locomoverPara("sul");
             break;
-        case "leste": 
+        case "leste":
             locomoverPara("leste");
             break;
-        case "oeste": 
+        case "oeste":
             locomoverPara("oeste");
             break;
         case "pescar":
@@ -97,7 +97,18 @@ form.addEventListener("submit", (e) => {
         case "beber":
             beberAgua();
             break;
+        case "mapa":
+            mostarLocal();
+            break;
+        case "ajuda":
+            mostarComandos();
+            break;
+        default:
+            mostarComandos();
     }
+
+    form.inComando.value = "";
+    form.inComando.focus();
 });
 
 ////////////////////////////////////////////////////////////////////////////
@@ -105,7 +116,7 @@ form.addEventListener("submit", (e) => {
 ////////////////////////////////////////////////////////////////////////////
 
 // Conta os dias e processa o que acontece no passar deles
-function contarMeridiano() { 
+function contarMeridiano() {
     spTempo.innerHTML = tempo;
     spFome.innerHTML = fome;
     spSede.innerHTML = sede;
@@ -114,16 +125,16 @@ function contarMeridiano() {
 
     if (dia) { // Quando é dia
         spMeridiano.innerHTML = "&#9788";
-        locomoverPara("deriva");        
+        locomoverPara("deriva");
 
         if (fome < 0) { // Reduz 1 ponto de energia no fim da resistência à fome
             energia--;
-            spEnergia.innerHTML = energia
+            spEnergia.innerHTML = energia.toFixed(1);
         }
 
         if (sede < 0) { // Reduz 2 ponto de energia no fim da resistência à sede
             energia -= 2;
-            spEnergia.innerHTML = energia
+            spEnergia.innerHTML = energia.toFixed(1);
         }
 
         // Muda o clima da noite de acordo como estava no dia
@@ -156,12 +167,12 @@ function contarMeridiano() {
 
         dia = false;
     } else { // Quando é noite
-        spMeridiano.innerHTML = "&#9790;"        
+        spMeridiano.innerHTML = "&#9790;"
         tempo++; // Atualiza contagem de dia a noite
         fome--; // Reduz os dias que pode ficar sem comer
         sede--; // Reduz os dias que pode ficar sem beber   
         dvTudo.style.backgroundColor = "rgb(0, 0, 0, 0.5)";
-            
+
         // Sorteia o clima do dia
         const n = Math.random();
 
@@ -187,7 +198,7 @@ function contarMeridiano() {
     setTimeout(contarMeridiano, (DIA / 2) * MINUTOS);
 }
 
-// locomove para uma determinada direção ou uma direção aleatória (deriva)
+// Locomove para uma determinada direção ou uma direção aleatória (deriva)
 function locomoverPara(direcao) {
     switch (direcao) {
         case "deriva":
@@ -210,18 +221,27 @@ function locomoverPara(direcao) {
             break;
         case "norte":
             localY--;
+            energia -= 1 * FatorClima[clima];
             break;
         case "sul":
             localY++;
+            energia -= 1 * FatorClima[clima];
             break;
         case "leste":
             localX++;
+            energia -= 1 * FatorClima[clima];
             break;
         case "oeste":
-            localX--;     
+            localX--;
+            energia -= 1 * FatorClima[clima];
+            break;
     }
 
-    console.log("local = (" + localX + ", " + localY + ")");
+    if (map[localX][localY] == "ilha") {
+        pMensagem.innerHTML = "Você encontrou uma ilha!";
+    }
+
+    spEnergia.innerHTML = energia.toFixed(1);
 }
 
 function pescar() {
@@ -230,25 +250,57 @@ function pescar() {
         comida += map[localX][localY];
         map[localX][localY] = 0;
 
-        spEnergia.innerHTML = energia;
+        spEnergia.innerHTML = energia.toFixed(1);
         spComida.innerHTML = comida;
-    } else { // pesca em ilha
-        // o que fazer para pescar em uma ilha?
     }
 }
 
 function coletarAgua() {
-
+    if ((clima == "chuvoso" || clima == "tempestade") && agua < 5) {
+        agua += (5 - agua);
+        spAgua.innerHTML = agua;
+    }
 }
 
+// Coletar cocos em ilhas
 function colherCocos() {
-
+    if (map[localX][localY] == "ilha" && comida < 10) {
+        energia -= 3 * FatorClima[clima];
+        comida += (10 - comida);
+        spEnergia.innerHTML = energia.toFixed(1);
+        spComida.innerHTML = comida;
+    }
 }
 
 function comer() {
-
+    if (comida > 0) {
+        energia++;
+        comida--;
+        fome++;
+        sede--;
+        spEnergia.innerHTML = energia.toFixed(1);
+        spComida.innerHTML = comida;
+        spFome.innerHTML = fome;
+        spSede.innerHTML = sede;
+    }
 }
 
 function beberAgua() {
+    if (agua > 0) {
+        agua--;
+        sede++;    
+        spAgua.innerHTML = agua;
+        spSede.innerHTML = sede;
+    }
+    
+}
 
+function mostarLocal() {
+    pMensagem.innerHTML = `Você está na posição (${localX}, ${localY}).`;
+}
+
+function mostarComandos() {
+    pMensagem.innerHTML = `Use os comandos <i>norte</i>, <i>sul</i>, <i>leste</i>,
+     <i>oeste</i>, <i>comer</i>, <i>beber</i>, <i>pescar</i>, <i>coletar</i>,
+     <i>colher</i>, <i>mapa</i> ou <i>ajuda</i>.`;
 }
