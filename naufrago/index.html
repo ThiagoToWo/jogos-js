@@ -1,17 +1,19 @@
 <!DOCTYPE html>
 <html lang="pt-br">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>O Náufrago</title>
     <link rel="stylesheet" href="css/style.css">
 </head>
+
 <body>
     <div id="dvTudo">
         <h1>O Náufrago</h1>
         <p>Sobreviva o máximo possível racionando água e alimento. Tente encontrar terra firme.</p>
         <div id="dvTempo">
-            Dia <span id="spTempo"></span> - 
+            Dia <span id="spTempo"></span> -
             Clima <span id=spClima></span>
             <span id="spMeridiano"></span>
         </div>
@@ -22,16 +24,44 @@
             Resistência à fome = <span id="spFome"></span> dias<br>
             Resistência à sede = <span id="spSede"></span> dias<br>
         </div>
-        <form>
+        <!--<form>
             Digite um comando: 
             <input type="text" id="inComando">
             <input type="submit" value="Executar">
-        </form>
-        <div id="dvMensagens">
+        </form>-->
+        <div id="dvMensagens" class="clear">
             <h3>Mensagem:</h3>
             <p id="pMensagem"></p>
+        </div>
+        <div id="dvDirecao" class="float">
+            <table>
+                <tr>
+                    <td></td>
+                    <td><button id="btNorte">Norte</button></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td><button id="btOeste">Oeste</button></td>
+                    <td></td>
+                    <td><button id="btLeste">Leste</button></td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td><button id="btSul">Sul</button></td>
+                    <td></td>
+                </tr>
+            </table>
+        </div>
+        <div id="dvComandos" class="float">
+            <button id="btComer">comer</button>
+            <button id="btBeber">beber</button>
+            <button id="btPescar">pescar</button><br>
+            <button id="btColetar">coletar água</button>
+            <button id="btColher">colher côcos</button> 
+            <button id="btMapa">mapa</button>
         </div>
     </div>
     <script src="js/script.js"></script>
 </body>
+
 </html>

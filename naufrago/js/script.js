@@ -1,4 +1,4 @@
-const form = document.querySelector("form");
+//const form = document.querySelector("form");
 const spTempo = document.querySelector("#spTempo");
 const spClima = document.querySelector("#spClima");
 const spMeridiano = document.querySelector("#spMeridiano");
@@ -8,6 +8,16 @@ const spAgua = document.querySelector("#spAgua");
 const spFome = document.querySelector("#spFome");
 const spSede = document.querySelector("#spSede");
 const pMensagem = document.querySelector("#pMensagem");
+const btNorte = document.querySelector("#btNorte");
+const btSul = document.querySelector("#btSul");
+const btLeste = document.querySelector("#btLeste");
+const btOeste = document.querySelector("#btOeste");
+const btComer = document.querySelector("#btComer");
+const btBeber = document.querySelector("#btBeber");
+const btPescar = document.querySelector("#btPescar");
+const btColetar = document.querySelector("#btColetar");
+const btColher = document.querySelector("#btColher");
+const btMapa = document.querySelector("#btMapa");
 
 const MAP_SIZE = 100; // dimensão do mapa
 const map = []; // mapa matrix MAP_SIZE x MAP_SIZE
@@ -64,7 +74,18 @@ for (let i = 0; i < MAP_SIZE; i++) {
     if (l != -1) console.log("ilha em (" + i + ", " + l + ")");
 }
 
-form.addEventListener("submit", (e) => {
+btNorte.addEventListener("click", locomoverParaNorte);
+btSul.addEventListener("click", locomoverParaSul);
+btLeste.addEventListener("click", locomoverParaLeste);
+btOeste.addEventListener("click", locomoverParaOeste);
+btBeber.addEventListener("click", beberAgua);
+btComer.addEventListener("click", comer);
+btPescar.addEventListener("click", pescar);
+btColetar.addEventListener("click", coletarAgua);
+btColher.addEventListener("click", colherCocos);
+btMapa.addEventListener("click", mostarLocal);
+
+/*form.addEventListener("submit", (e) => {
     e.preventDefault();
 
     const comando = form.inComando.value;
@@ -109,7 +130,7 @@ form.addEventListener("submit", (e) => {
 
     form.inComando.value = "";
     form.inComando.focus();
-});
+});*/
 
 ////////////////////////////////////////////////////////////////////////////
 //                                Funções                                 //
@@ -125,7 +146,7 @@ function contarMeridiano() {
 
     if (dia) { // Quando é dia
         spMeridiano.innerHTML = "&#9788";
-        locomoverPara("deriva");
+        locomoverADeriva();
 
         if (fome < 0) { // Reduz 1 ponto de energia no fim da resistência à fome
             energia--;
@@ -195,11 +216,12 @@ function contarMeridiano() {
         pMensagem.innerHTML = "Você morreu no " + tempo + "º dia.";
         return;
     }
+
     setTimeout(contarMeridiano, (DIA / 2) * MINUTOS);
 }
 
 // Locomove para uma determinada direção ou uma direção aleatória (deriva)
-function locomoverPara(direcao) {
+/*function locomoverPara(direcao) {
     switch (direcao) {
         case "deriva":
             const n = 1 + Math.floor(Math.random() * 4);
@@ -242,6 +264,64 @@ function locomoverPara(direcao) {
     }
 
     spEnergia.innerHTML = energia.toFixed(1);
+}*/
+
+function locomoverParaNorte() {
+    localY--;
+    energia -= 1 * FatorClima[clima];
+    spEnergia.innerHTML = energia.toFixed(1);
+
+    if (map[localX][localY] == "ilha") {
+        pMensagem.innerHTML = "Você encontrou uma ilha!";
+    }
+}
+
+function locomoverParaSul() {
+    localY++;
+    energia -= 1 * FatorClima[clima];
+    spEnergia.innerHTML = energia.toFixed(1);
+
+    if (map[localX][localY] == "ilha") {
+        pMensagem.innerHTML = "Você encontrou uma ilha!";
+    }
+}
+
+function locomoverParaLeste() {
+    localX++;
+    energia -= 1 * FatorClima[clima];
+    spEnergia.innerHTML = energia.toFixed(1);
+
+    if (map[localX][localY] == "ilha") {
+        pMensagem.innerHTML = "Você encontrou uma ilha!";
+    }
+}
+
+function locomoverParaOeste() {
+    localX--;
+    energia -= 1 * FatorClima[clima];
+    spEnergia.innerHTML = energia.toFixed(1);
+
+    if (map[localX][localY] == "ilha") {
+        pMensagem.innerHTML = "Você encontrou uma ilha!";
+    }
+}
+
+function locomoverADeriva() {
+    const n = 1 + Math.floor(Math.random() * 4);
+
+    switch (n) {
+        case 1: // norte
+            localY--;
+            break;
+        case 2: // sul
+            localY++;
+            break;
+        case 3: // leste
+            localX++;
+            break;
+        case 4: // oeste
+            localX--;
+    }
 }
 
 function pescar() {
@@ -288,11 +368,11 @@ function comer() {
 function beberAgua() {
     if (agua > 0) {
         agua--;
-        sede++;    
+        sede++;
         spAgua.innerHTML = agua;
         spSede.innerHTML = sede;
     }
-    
+
 }
 
 function mostarLocal() {
