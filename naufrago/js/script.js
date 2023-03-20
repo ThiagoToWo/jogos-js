@@ -22,14 +22,14 @@ const MAP_SIZE = 100; // dimensão do mapa
 const map = []; // mapa matrix MAP_SIZE x MAP_SIZE
 let localX = 49; // localização x do personagem
 let localY = 49; // localização y do personagem
-let tempo = 0; // tempo decorrido do jogo em dias (5 min)
+let tempo = -1; // tempo decorrido do jogo em dias (5 min)
 let clima = "ameno"; // clima do dia
 let dia = true; // se é dia ou noite
 let energia = 10; // quantidade de energia do personagem
 let comida = 3; // quantidade de comida do personagem
 let agua = 5; // quantidade de água do personagem
-let fome = 7; // dias para resistir a fome sem perder energia
-let sede = 3; // dias para resistir a sede sem perder energia
+let fome = 8; // dias para resistir a fome sem perder energia
+let sede = 4; // dias para resistir a sede sem perder energia
 const FatorClima = { // fator de gasto de energia para pesca e locomoção em cada clima
     "muito quente": 0.3,
     "quente": 0.2,
@@ -39,6 +39,7 @@ const FatorClima = { // fator de gasto de energia para pesca e locomoção em ca
 }
 const DIA = 5 // tempo de um dia em minutos
 const MINUTOS = 1000 * 60; // milissegundos para minutos
+let vivo = true;
 
 // Preencher mapa
 for (let i = 0; i < MAP_SIZE; i++) {
@@ -67,11 +68,11 @@ for (let cont = 0; cont < 2; cont++) {
 // Criar timer
 contarMeridiano();
 
-console.table(map);
+/*console.table(map);
 for (let i = 0; i < MAP_SIZE; i++) {
     const l = map[i].indexOf("ilha");
     if (l != -1) console.log("ilha em (" + i + ", " + l + ")");
-}
+}*/
 
 btNorte.addEventListener("click", locomoverParaNorte);
 btSul.addEventListener("click", locomoverParaSul);
@@ -90,15 +91,16 @@ btMapa.addEventListener("click", mostarLocal);
 
 // Conta os dias e processa o que acontece no passar deles
 function contarMeridiano() {
-    spTempo.innerHTML = tempo;
-    spFome.innerHTML = fome;
-    spSede.innerHTML = sede;
-    spClima.innerHTML = clima;
-    dvTudo.style.backgroundColor = "rgb(255, 255, 255)";
+    if (!vivo) return;
 
     if (dia) { // Quando é dia
-        spMeridiano.innerHTML = "&#9788";
-        locomoverADeriva();
+        spMeridiano.innerHTML = "&#9788";        
+        tempo++; // Atualiza contagem de dia a noite
+        fome--; // Reduz os dias que pode ficar sem comer
+        sede--; // Reduz os dias que pode ficar sem beber  
+        dvTudo.style.backgroundColor = "rgb(255, 255, 255)";
+
+        if (map[localX][localY] != "ilha") locomoverADeriva();
 
         if (fome < 0) { // Reduz 1 ponto de energia no fim da resistência à fome
             energia--;
@@ -109,6 +111,28 @@ function contarMeridiano() {
             energia -= 2;
             spEnergia.innerHTML = energia.toFixed(1);
         }
+
+        verificarMorte();
+
+        // Sorteia o clima do dia
+        const n = Math.random();
+
+        if (n >= .9) { // 10% de chance de tempestade
+            clima = "tempestade";
+        } else if (n >= .7) { // 20% de chance de dia chuvoso
+            clima = "chuvoso";
+        } else if (n >= .3) { // 40% de chance de clima ameno
+            clima = "ameno";
+        } else if (n >= .1) { // 20% de chance de dia quente
+            clima = "quente";
+        } else { // 10% de chance de dia muito quente
+            clima = "muito quente";
+        }        
+
+        dia = false;
+    } else { // Quando é noite
+        spMeridiano.innerHTML = "&#9790;" 
+        dvTudo.style.backgroundColor = "rgb(0, 0, 0, 0.5)";
 
         // Muda o clima da noite de acordo como estava no dia
         let n;
@@ -138,46 +162,27 @@ function contarMeridiano() {
             }
         }
 
-        dia = false;
-    } else { // Quando é noite
-        spMeridiano.innerHTML = "&#9790;"
-        tempo++; // Atualiza contagem de dia a noite
-        fome--; // Reduz os dias que pode ficar sem comer
-        sede--; // Reduz os dias que pode ficar sem beber   
-        dvTudo.style.backgroundColor = "rgb(0, 0, 0, 0.5)";
-
-        // Sorteia o clima do dia
-        const n = Math.random();
-
-        if (n >= .9) { // 10% de chance de tempestade
-            clima = "tempestade";
-        } else if (n >= .7) { // 20% de chance de dia chuvoso
-            clima = "chuvoso";
-        } else if (n >= .3) { // 40% de chance de clima ameno
-            clima = "ameno";
-        } else if (n >= .1) { // 20% de chance de dia quente
-            clima = "quente";
-        } else { // 10% de chance de dia muito quente
-            clima = "muito quente";
-        }
-
         dia = true;
     }
 
-    if (energia <= 0) {
-        spMensagem.innerHTML = "Você morreu no " + tempo + "º dia.";
-        return;
-    }
+    spTempo.innerHTML = tempo;
+    spFome.innerHTML = fome;
+    spSede.innerHTML = sede;
+    spClima.innerHTML = clima;    
 
     setTimeout(contarMeridiano, (DIA / 2) * MINUTOS);
 }
 
 // Locomove para uma determinada direção ou uma direção aleatória (deriva)
 function locomoverParaNorte() {
+    if (localY <= 0) return;
+
     localY--;
     energia -= 1 * FatorClima[clima];
     spEnergia.innerHTML = energia.toFixed(1);
     spMensagem.innerHTML = "Energia -" + FatorClima[clima];
+
+    verificarMorte();
 
     if (map[localX][localY] == "ilha") {
         spMensagem.innerHTML = "Você encontrou uma ilha!";
@@ -185,10 +190,14 @@ function locomoverParaNorte() {
 }
 
 function locomoverParaSul() {
+    if (localY >= MAP_SIZE - 1) return;
+
     localY++;
     energia -= 1 * FatorClima[clima];
     spEnergia.innerHTML = energia.toFixed(1);
     spMensagem.innerHTML = "Energia -" + FatorClima[clima];
+
+    verificarMorte();
 
     if (map[localX][localY] == "ilha") {
         spMensagem.innerHTML = "Você encontrou uma ilha!";
@@ -196,10 +205,14 @@ function locomoverParaSul() {
 }
 
 function locomoverParaLeste() {
+    if (localX >= MAP_SIZE - 1) return;
+
     localX++;
     energia -= 1 * FatorClima[clima];
     spEnergia.innerHTML = energia.toFixed(1);
     spMensagem.innerHTML = "Energia -" + FatorClima[clima];
+
+    verificarMorte();
 
     if (map[localX][localY] == "ilha") {
         spMensagem.innerHTML = "Você encontrou uma ilha!";
@@ -207,10 +220,14 @@ function locomoverParaLeste() {
 }
 
 function locomoverParaOeste() {
+    if (localX <= 0) return;
+
     localX--;
     energia -= 1 * FatorClima[clima];
     spEnergia.innerHTML = energia.toFixed(1);
     spMensagem.innerHTML = "Energia -" + FatorClima[clima];
+
+    verificarMorte();
 
     if (map[localX][localY] == "ilha") {
         spMensagem.innerHTML = "Você encontrou uma ilha!";
@@ -245,6 +262,8 @@ function pescar() {
         spComida.innerHTML = comida;
         spMensagem.innerHTML = `Energia -${gasto.toFixed(1)}, Comida +${numPeixes}.`;
 
+        verificarMorte();
+
         map[localX][localY] = 0;
     } else {
         spMensagem.innerHTML = "Saia da ilha para poder pescar."
@@ -272,6 +291,8 @@ function colherCocos() {
         spEnergia.innerHTML = energia.toFixed(1);
         spComida.innerHTML = comida;
         spMensagem.innerHTML = `Energia -${gasto.toFixed(1)}, Comida +${numCocos}.`;
+
+        verificarMorte();
     } else {
         spMensagem.innerHTML = "Você só pode coletar côcos em ilhas até completar 10 unidades de comida."
     }
@@ -307,4 +328,17 @@ function beberAgua() {
 
 function mostarLocal() {
     spMensagem.innerHTML = `Você está na posição (${localX}, ${localY}).`;
+}
+
+function verificarMorte() {
+    if (energia <= 0) {
+        spMensagem.innerHTML = "Você morreu no " + tempo + "º dia.";
+        const botoes = document.querySelectorAll("button");
+
+        for (const botao of botoes) {
+            botao.disabled = true;
+        }
+
+        vivo = false;
+    }
 }
