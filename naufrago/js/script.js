@@ -39,7 +39,7 @@ const FatorClima = { // fator de gasto de energia para pesca e locomoção em ca
 }
 const DIA = 5 // tempo de um dia em minutos
 const MINUTOS = 1000 * 60; // milissegundos para minutos
-let vivo = true;
+let vivo = true; // se o personagem está vivo
 
 // Preencher mapa
 for (let i = 0; i < MAP_SIZE; i++) {
