@@ -37,6 +37,20 @@ const FatorClima = { // fator de gasto de energia para pesca e locomoção em ca
     "chuvoso": 0.2,
     "tempestade": 0.3
 }
+const urlClimasDia = { // url das imagens de fundo do dia em diferentes climas
+    "muito quente": "url('img/oceano-muito-quente-dia.jpg')",
+    "quente": "url('img/oceano-quente-dia.jpg')",
+    "ameno": "url('img/oceano-ameno-dia.jpg')",
+    "chuvoso": "url('img/oceano-chuva-dia.jpg')",
+    "tempestade": "url('img/oceano-tempestade-dia.jpg')"
+}
+const urlClimasNoite = { // url das imagens de fundo da noite em diferentes climas
+    "muito quente": "url('img/oceano-muito-quente-noite.jpg')",
+    "quente": "url('img/oceano-quente-noite.jpg')",
+    "ameno": "url('img/oceano-ameno-noite.jpg')",
+    "chuvoso": "url('img/oceano-chuva-noite.jpg')",
+    "tempestade": "url('img/oceano-tempestade-noite.jpg')"
+}
 const DIA = 5 // tempo de um dia em minutos
 const MINUTOS = 1000 * 60; // milissegundos para minutos
 let vivo = true; // se o personagem está vivo
@@ -98,7 +112,8 @@ function contarMeridiano() {
         tempo++; // Atualiza contagem de dia a noite
         fome--; // Reduz os dias que pode ficar sem comer
         sede--; // Reduz os dias que pode ficar sem beber  
-        dvTudo.style.backgroundColor = "rgb(255, 255, 255)";
+        dvTudo.style.backgroundColor = "rgb(255, 255, 255, 0.5)";
+        document.body.style.color = "black";     
 
         if (map[localX][localY] != "ilha") locomoverADeriva();
 
@@ -119,20 +134,26 @@ function contarMeridiano() {
 
         if (n >= .9) { // 10% de chance de tempestade
             clima = "tempestade";
+            document.body.style.backgroundImage = urlClimasDia[clima];
         } else if (n >= .7) { // 20% de chance de dia chuvoso
             clima = "chuvoso";
+            document.body.style.backgroundImage = urlClimasDia[clima];
         } else if (n >= .3) { // 40% de chance de clima ameno
             clima = "ameno";
+            document.body.style.backgroundImage = urlClimasDia[clima];
         } else if (n >= .1) { // 20% de chance de dia quente
             clima = "quente";
+            document.body.style.backgroundImage = urlClimasDia[clima];
         } else { // 10% de chance de dia muito quente
             clima = "muito quente";
+            document.body.style.backgroundImage = urlClimasDia[clima];
         }        
 
         dia = false;
     } else { // Quando é noite
         spMeridiano.innerHTML = "&#9790;" 
         dvTudo.style.backgroundColor = "rgb(0, 0, 0, 0.5)";
+        document.body.style.color = "white";
 
         // Muda o clima da noite de acordo como estava no dia
         let n;
@@ -141,24 +162,31 @@ function contarMeridiano() {
             n = Math.random();
             if (n >= .5) {
                 clima = "tempestade";
+                document.body.style.backgroundImage = urlClimasNoite[clima];
             } else {
                 clima = "ameno";
+                document.body.style.backgroundImage = urlClimasNoite[clima];
             }
         } else if (clima == "ameno") { // continua ameno
             clima = "ameno";
+            document.body.style.backgroundImage = urlClimasNoite[clima];
         } else if (clima == "quente") { // 30% de chuva e 70% de ficar ameno
             n = Math.random();
             if (n >= .7) {
                 clima = "chuvoso";
+                document.body.style.backgroundImage = urlClimasNoite[clima];
             } else {
                 clima = "ameno";
+                document.body.style.backgroundImage = urlClimasNoite[clima];
             }
         } else { // 50% de chuva ou ameno
             n = Math.random();
             if (n >= .5) {
                 clima = "chuvoso";
+                document.body.style.backgroundImage = urlClimasNoite[clima];
             } else {
                 clima = "ameno";
+                document.body.style.backgroundImage = urlClimasNoite[clima];
             }
         }
 
