@@ -1,0 +1,183 @@
+<!doctype html>
+<html lang="pt-br">
+
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>MUGWUMPS | by Thiago Alves</title>
+	<style>
+		body {
+			font-family: courier;
+			background-color: #999;
+			text-align: center;
+		}
+
+		.container {
+			margin: 0 auto;
+			width: 80vw;
+			border: solid white;
+			border-radius: 20px;
+			background-color: black;
+			color: white;
+			padding: 5%;
+		}
+
+		pre {
+			border: solid 1px;
+			border-radius: 10px;
+			height: 25vh;
+		}
+	</style>
+</head>
+
+<body>
+	<div class="container">
+		<h1>MUGWUMPS</h1>
+		<pre id="pMapa"></pre>
+		<form>
+			<p>
+				linha: <input type="number" id="inX" min="0" max="9" autofocus required>
+			</p>
+			<p>
+				coluna: <input type="number" id="inY" min="0" max="9" required>
+			</p>
+			<input type="submit" id="botao" value="Atirar">
+		</form>
+		<pre id="pLog"></pre>
+	</div>
+
+	<script>
+		const form = document.querySelector("form");
+		const preMapa = document.querySelector("#pMapa");
+		const preLog = document.querySelector("#pLog");
+
+		const mapa = []; // mapa		
+		const mugwumps = []; // os 4 mugwumps
+		let distancias // as distancias para os 4 mugwumps
+		let tiro = 0;
+		const x0 = 4;
+		const y0 = 4
+
+		construirMapa();
+		imprimirMapa();
+		sortearPosicoes();
+		distancias = medirDistancias(x0, y0, mugwumps);
+		imprimirLog();
+
+		form.addEventListener("submit", (e) => {
+			e.preventDefault();			
+
+			const x = Number(form.inX.value);
+			const y = Number(form.inY.value);
+			
+			mapa[x][y] = ++tiro;
+
+			distancias = medirDistancias(x, y, mugwumps);
+
+			verificarEncontro();
+			imprimirMapa();
+			imprimirLog();
+			verificarFim();
+
+			form.reset();
+			form.inX.focus();			
+		});
+
+		function construirMapa() {
+			for (let i = 0; i < 10; i++) {
+				const linha = [];
+				for (let j = 0; j < 10; j++) {
+					linha[j] = ".";
+				}
+
+				mapa[i] = linha;
+			}
+
+			mapa[x0][y0] = tiro;
+		}
+
+		function sortearPosicoes() {
+			const mwsX = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]; // possíveis valores para x
+			const mwsY = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]; // possíveis valores para y
+
+			for (let i = 0; i < 4; i++) { // sorteia as posições dos 4 mugwumps
+				const x = Math.floor(Math.random() * mwsX.length);
+				const y = Math.floor(Math.random() * mwsY.length);
+
+				mugwumps[i] = { x, y, encontrado: false };
+			}
+		}
+
+		function medirDistancias(x, y, mugwumps) {
+			const dist = [];
+
+			for (let i = 0; i < mugwumps.length; i++) {
+				if (mugwumps[i].encontrado == false) {
+					dx = x - mugwumps[i].x;
+					dy = y - mugwumps[i].y;
+
+					dist[i] = Math.sqrt(dx * dx + dy * dy);
+				}
+			}
+
+			return dist;
+		}
+
+		function verificarEncontro() {
+			for (let i = 0; i < distancias.length; i++) {
+				if (distancias[i] == 0) {
+					mapa[mugwumps[i].x][mugwumps[i].y] = "x";
+					mugwumps[i].encontrado = true;
+				}
+			}
+		}
+
+		function imprimirMapa() {
+			let map = "  0  1  2  3  4  5  6  7  8  9\n";
+
+			for (let i = 0; i < 10; i++) {
+				map += i + "  ";
+				for (let j = 0; j < 10; j++) {
+					map += mapa[i][j] + "  ";
+				}
+
+				map += "\n";
+			}
+			
+			preMapa.innerText = map;
+		}
+
+		function imprimirLog() {
+			let log = "";
+
+			for (let i = 0; i < distancias.length; i++) {
+				if (distancias[i] != undefined) {
+					log += `A distância para o Mugwump ${i + 1} é ${distancias[i].toFixed(2)}.\n`;
+				}
+
+				if (distancias[i] == 0) {
+					log += `Você encontoru o Mugwump ${i + 1}.\n`
+				}
+			}
+
+			preLog.innerText = log;
+		}
+
+		function verificarFim() {
+			if (distancias.length == 0) {
+				preLog.innerText += `Você achou todos os Mugwumps.`;
+				form.inX.disabled = true;
+				form.inY.disabled = true;
+				form.botao.disabled = true;
+			}
+			
+			if (tiro == 10) {
+				preLog.innerText += "Seus tiros acabaram.\n";
+				form.inX.disabled = true;
+				form.inY.disabled = true;
+				form.botao.disabled = true;
+			}
+		}
+	</script>
+</body>
+<html>
