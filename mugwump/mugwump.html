@@ -164,8 +164,16 @@
 		}
 
 		function verificarFim() {
-			if (distancias.length == 0) {
-				preLog.innerText += `Você achou todos os Mugwumps.`;
+			let achouTodos = true;
+
+			for (let i = 0; i < distancias.length; i++) {
+				if (distancias[i] != undefined && distancias[i] != 0) {
+					achouTodos = false;
+				}
+			}
+
+			if (achouTodos) {
+				preLog.innerText += `Você achou todos os Mugwumps.\n`;
 				form.inX.disabled = true;
 				form.inY.disabled = true;
 				form.botao.disabled = true;
