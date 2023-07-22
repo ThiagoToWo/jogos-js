@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bingo</title>
+</head>
+
+<body>
+    <button>Sortear</button>
+    <br><br>
+    <h3 class="numero"></h3>
+
+    <h3 class="cartela"></h3>
+    <h3 class="cartela"></h3>
+    <h3 class="cartela"></h3>
+    <h3 class="cartela"></h3>
+    <h3 class="cartela"></h3>
+
+    <script>
+        const btSortear = document.querySelector("button");
+        const hNumero = document.querySelector("[class='numero']");
+        const hCartelas = document.querySelectorAll("h3[class='cartela']");
+
+        const cesta = []
+        const numCartelas = 5;
+        const tamCartela = 25
+        const cartelas = [];
+        let bingo = false;
+
+        for (let i = 0; i < 75; i++) {
+            cesta[i] = i + 1;
+        }
+
+        for (let i = 0; i < numCartelas; i++) {
+            cartelas[i] = gerarCartela();
+        }
+
+        imprimirCartelas();
+
+        btSortear.addEventListener("click", sortearNumero);
+
+        // funções úteis
+        function gerarCartela() {
+            const cartela = []
+
+            // sortear cinco números distintos em cada intervalo: 
+            // 1-15, 16-30, 31-45, 46-60 e 61-75
+            // e preencher a cartela.
+            for (let inicio = 1, fim = 15; fim <= 75; inicio = fim + 1, fim = inicio + 14) {
+                for (let linha = 1; linha <= 5; linha++) {
+                    let numero;
+
+                    do {
+                        numero = Math.floor(inicio + Math.random() * (fim - inicio + 1));
+                    } while (cartela.includes(numero));
+
+                    cartela.push(numero);
+                }
+            }
+
+            cartela[tamCartela] = 0;
+
+            return cartela;
+        }
+
+        function imprimirCartelas() {
+            for (let i = 0; i < numCartelas; i++) {
+                hCartelas[i].innerHTML = "";
+                
+                for (let j = 0; j < tamCartela; j++) {
+                    hCartelas[i].innerHTML += cartelas[i][j] + "&nbsp;&nbsp;";
+                }
+            }
+        }
+
+        function sortearNumero() {
+            if (bingo) return;
+            // sortear um número de 1 a 75
+            // e retirar ele do cesto.
+            let numero;
+
+            do {
+                numero = Math.floor(1 + Math.random() * 75);
+            } while (!cesta.includes(numero));
+
+            for (let i = 0; i < cesta.length; i++) {
+                if (numero == cesta[i]) {
+                    cesta[i] = 0;
+                }
+            }
+
+            hNumero.innerHTML += numero + "&nbsp;";
+
+            marcarNumero(numero);
+        }
+
+        function marcarNumero(num) {
+            // marcar cada número na cartela
+            // e imprimir nas h3.
+            for (let i = 0; i < numCartelas; i++) {
+                for (let j = 0; j < 25; j++) {
+                    if (cartelas[i][j] == num) {
+                        cartelas[i][j] = "<font style='color:red'>" + cartelas[i][j] + "</font>";
+                        cartelas[i][tamCartela]++;
+                    }
+
+                    if (cartelas[i][tamCartela] == 25) {
+                        bingo = true;
+                    }
+                }
+            }
+
+            imprimirCartelas();
+        }
+    </script>
+</body>
+
+</html>
