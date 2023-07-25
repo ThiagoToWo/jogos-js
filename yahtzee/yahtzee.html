@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Yahtzee!</title>
+    <title>Poker de Dados</title>
     <style>
         body {
             display: flex;
@@ -94,7 +94,7 @@
 
 <body>
     <div id="container">
-        <h1>Yahtzee!</h1>
+        <h1>Poker de Dados</h1>
         <header>
             <div id="menu">
                 <button id="novo">Novo Jogo</button>
@@ -122,55 +122,55 @@
         <div id="jogadas">
             <table>
                 <tr>
-                    <th>One</th>
+                    <th>Um</th>
                     <th><button name="jogada" id="one">0</button></th>
                 </tr>
                 <tr>
-                    <th>Two</th>
+                    <th>Dois</th>
                     <th><button name="jogada" id="two">0</button></th>
                 </tr>
                 <tr>
-                    <th>Three</th>
+                    <th>Três</th>
                     <th><button name="jogada" id="three">0</button></th>
                 </tr>
                 <tr>
-                    <th>Four</th>
+                    <th>Quatro</th>
                     <th><button name="jogada" id="four">0</button></th>
                 </tr>
                 <tr>
-                    <th>Five</th>
+                    <th>Cinco</th>
                     <th><button name="jogada" id="five">0</button></th>
                 </tr>
                 <tr>
-                    <th>Six</th>
+                    <th>Seis</th>
                     <th><button name="jogada" id="six">0</button></th>
                 </tr>
                 <tr>
-                    <th>3 of a kind</th>
+                    <th>Trinca</th>
                     <th><button name="jogada" id="3-kind">0</button></th>
                 </tr>
                 <tr>
-                    <th>4 of a kind</th>
+                    <th>Quadra</th>
                     <th><button name="jogada" id="4-kind">0</button></th>
                 </tr>
                 <tr>
-                    <th>Full House</th>
+                    <th>Par + Trinca</th>
                     <th><button name="jogada" id="fhouse">0</button></th>
                 </tr>
                 <tr>
-                    <th>Small Straight</th>
+                    <th>Sequência Menor</th>
                     <th><button name="jogada" id="sstr">0</button></th>
                 </tr>
                 <tr>
-                    <th>Large Straight</th>
+                    <th>Sequência Maior</th>
                     <th><button name="jogada" id="lstr">0</button></th>
                 </tr>
                 <tr>
-                    <th>Yahtzee</th>
-                    <th><button name="jogada" id="yahtzee">0</button></th>
+                    <th>Quina</th>
+                    <th><button name="jogada" id="5-kind">0</button></th>
                 </tr>
                 <tr>
-                    <th>Chance</th>
+                    <th>Reserva</th>
                     <th><button name="jogada" id="chance">0</button></th>
                 </tr>
                 <tr>
@@ -199,45 +199,45 @@
         const dadosNaMesa = [];
         const autor = "Thiago de Oliveira Alves\ntowo497@gmail.com";
         const versao = "versão 1.0\n15/07/2023";
-        const regras = "Como Jogar\n\n" + 
-				"O jogo consiste em 13 rodadas. Em cada rodada, você joga os dados e então marca uma das 13 categorias.\n" + 
-				"Você tem que marcar uma categoria em cada rodada, o que significa que para o fim do jogo você pode ter\n" +
-				"que se conformar em marcar zero em algumas categorías. O objetivo do jogo é maximizar sua pontuação total.\n" + 
-				"O jogo termina uma vez que todas as 13 categorias forem marcadas.\n\n" +
-				"Jogando os Dados\n\n" +
-				"Você tem cinco dados que você pode jogar. Para começar, clique no botão \"Rolar (3)\". Depois que você\n" +
-				"joga os dados, você pode aceitar o jogo atual, ou jogar novamente qualquer um ou até todos os cinco dados.\n" +
-				"Para jogar novamente alguns dos dados, clique nos dados que desejar manter (cada dado a ser mantido ficará\n" +
-				"escuro) então clique no mesmo botão que utilizou para jogar os dados da primeira vez. Isto jogará os dados\n" +
-			    "não selecionados e deixará os selcionados inalterados. Você pode jogar os dados um total de três vezes:\n" +
-				"a jogada inicial (a qual você tem que jogar todos os dados), mais duas jogadas de qualquer um ou até todos\n" +
-				"os dados. Depois de rodar três vezes ou quando achar que fez uma boa pontuaçao, você tem que marcar o jogo.\n" +
-				"Uma vez que você marcou o jogo, você joga todos os dados novamente e repete o processo. Você continua até\n" +
-				"todas as 13 categorias estarem preenchidas, quando então, termina a partida.\n\n" +
-				"Regras\n\n" +
-				"Nos botões \"One (um), Two (dois), Three (três), Four (quatro), Five (cinco), e Six (seis)\", o número de\n" + 
-				"pontos marcado depende do número de dados em sua combinação que tiver o valor daquele botão. Nos \"3 of a\n" + 
-				"kind, 4 of a kind, Full House, Small Straight, Large Straight, Yahtzee e Chance\", o número de pontos\n" +
-				"marcado é fixo para alguns e variável para outros. Semelhantemente, você receberá pontos de gratificação\n" +
-				"em certos casos. Tenha cuidado para não pôr uma combinação no botão errado, porque o botão é desabilitado\n" +
-				"e não poderá mais ser usado. A meta do jogo não é só encher todas as caixas para cada combinação, mas\n" +
-				"também obter tantos pontos quanto possível. Jogando freqüentemente, você perceberá que certas combinações,\n" +
-				"como um Yahtzee, não são tão fácil de serem obtidas.\n\n" +
-				"Tabela com os Valores de Pontuação\n\n" +
-				"One: soma de todos os valores 1.\n" +
-				"Two: soma de todos os valores 2.\n" + 
-				"Three: soma de todos os valores 3.\n" +
-				"Four: soma de todos os valores 4.\n" +
-				"Five: soma de todos os valores 5.\n" +
-				"Six: soma de todos os valores 6.\n" +
-				"Bonus: se a soma das categorias acima ultrapassar 63 pontos, recebe 50 pontos.\n" +
-				"3 of a kind: no mínimo 3 iguais. Vale a soma dos dados.\n" +
-				"4 of a kind: no mínimo 4 iguais. Vale a soma dos dados.\n" +
-				"Full House: 2 iguais + 3 iguais. Vale 25 pontos.\n" +
-				"Small Straight: sequência de no mínimo 4 números. Vale 30 pontos.\n" +
-				"Large Straight: sequência de 5 números. Vale 40 pontos.\n" +
-				"Yahtzee: 5 iguais. Vale 50 pontos.\n" +
-				"Chance: qualquer combinação. Vale a soma dos dados.";
+        const regras = "Como Jogar\n\n" +
+            "O jogo consiste em 13 rodadas. Em cada rodada, você joga os dados e então marca uma das 13 categorias.\n" +
+            "Você tem que marcar uma categoria em cada rodada, o que significa que para o fim do jogo você pode ter" +
+            " que se conformar em marcar zero em algumas categorías. O objetivo do jogo é maximizar sua pontuação total.\n" +
+            "O jogo termina uma vez que todas as 13 categorias forem marcadas.\n\n" +
+            "Jogando os Dados\n\n" +
+            "Você tem cinco dados que pode jogar. Para começar, clique no botão \"Rolar (3)\". Depois que você\n" +
+            "joga os dados, você pode aceitar o jogo atual, ou jogar novamente qualquer um ou até todos os cinco dados.\n" +
+            "Para jogar novamente alguns dos dados, clique nos dados que desejar manter (cada dado a ser mantido ficará " +
+            "escuro) então clique no mesmo botão que utilizou para jogar os dados da primeira vez. Isto jogará os dados " +
+            "não selecionados e deixará os selcionados inalterados.\n Você pode jogar os dados um total de três vezes: " +
+            "a jogada inicial (a qual você tem que jogar todos os dados), mais duas jogadas de qualquer um ou até todos " +
+            "os dados.\n Depois de rodar três vezes ou quando achar que fez uma boa pontuaçao, você tem que marcar o jogo.\n" +
+            "Uma vez que você marcou o jogo, você joga todos os dados novamente e repete o processo.\n Você continua até " +
+            "todas as 13 categorias estarem preenchidas, quando então, termina a partida.\n\n" +
+            "Regras\n\n" +
+            "Nos botões \"Um, Dois, Três, Quatro, Cinco, e Seis\", o número de " +
+            "pontos marcado depende da quantidade de dados em sua combinação que tiver aquele valor.\n Nos \"Trinca, " +
+            "Quadra, Par + Trinca, Sequência Menor, Sequência Maior, Quina e Reserva\", o número de pontos " +
+            "marcado é fixo para alguns e variável para outros. Semelhantemente, você receberá pontos de gratificação " +
+            "em certos casos.\n Tenha cuidado para não pôr uma combinação no botão errado, porque o botão é desabilitado " +
+            "e não poderá mais ser usado.\n A meta do jogo não é só encher todas as caixas para cada combinação, mas " +
+            "também obter tantos pontos quanto possível.\n Jogando frequentemente, você perceberá que certas combinações, " +
+            "como uma Quina, não são tão fácil de serem obtidas.\n\n" +
+            "Tabela com os Valores de Pontuação\n\n" +
+            "- Um: soma de todos os valores 1.\n" +
+            "- Dois: soma de todos os valores 2.\n" +
+            "- Três: soma de todos os valores 3.\n" +
+            "- Quatro: soma de todos os valores 4.\n" +
+            "- Cinco: soma de todos os valores 5.\n" +
+            "- Seis: soma de todos os valores 6.\n" +
+            "- Bonus: se a soma das categorias acima ultrapassar 63 pontos, recebe 50 pontos a mais no final.\n" +
+            "- Trinca: no mínimo 3 iguais. Vale a soma dos dados.\n" +
+            "- Quadra: no mínimo 4 iguais. Vale a soma dos dados.\n" +
+            "- Par + Trinca: 2 iguais + 3 iguais. Vale 25 pontos.\n" +
+            "- Sequência Menor: sequência de no mínimo 4 números. Vale 30 pontos.\n" +
+            "- Sequência Maior: sequência de 5 números. Vale 40 pontos.\n" +
+            "- Quina: 5 iguais. Vale 50 pontos.\n" +
+            "- Reserva: qualquer combinação. Vale a soma dos dados.";
 
         slInfo.addEventListener("change", () => {
             const index = slInfo.selectedIndex;
@@ -257,6 +257,15 @@
                     break;
                 case 4:
                     // mostrar dialog de record
+                    const record= JSON.parse(localStorage.getItem("recordyahtzee"));
+                    let infosRecord;
+
+                    if (record == undefined) {
+                        infosRecord = `0 pontos\nData:\nNome:`;
+                    } else {
+                        infosRecord = `${record.pontos} pontos\nData: ${record.data}\nNome: ${record.nome}`;
+                    }
+                    mostarDialog("#record", infosRecord);
                     break;
             }
 
@@ -266,18 +275,18 @@
         btNovoJogo.addEventListener("click", () => {
             window.location.reload();
         });
-        
+
         deixarLivre(dvDados);
 
         for (const jg of btJogadas) {
             jg.addEventListener("click", selecionarUnico);
         }
-        
+
         btRolar.innerText = `Rolar (${roladas})`;
         btRolar.addEventListener("click", rolarDados);
-        
+
         btContar.addEventListener("click", contabilizarPontos);
-        
+
         // funções de comportamento dos elementos da GUI
         function selecionarBotao() {
             if (this.className == "livre") {
@@ -286,17 +295,17 @@
                 this.className = "livre";
             }
         }
-        
+
         function selecionarUnico() {
             this.className = "selecionado";
-            
+
             for (const bt of btJogadas) {
                 if (bt != this) {
                     bt.className = "";
                 }
             }
         }
-        
+
         function deixarLivre(elementos) {
             for (const el of elementos) {
                 el.className = "livre";
@@ -445,7 +454,7 @@
             }
 
             if (tem5) {
-                jogadas[11] = 50; // yahtzee!
+                jogadas[11] = 50; // 5 de um tipo
             }
 
             jogadas[12] = soma; // soma dos dados em chance
@@ -483,7 +492,7 @@
 
             desabilitarClique(dvDados);
 
-            if (numJogadas == 13) {
+            if (numJogadas == 13) { // jogo acabou
                 let soma = 0;
 
                 for (let i = 0; i < 6; i++) {
@@ -496,6 +505,31 @@
                 }
 
                 btRolar.disabled = true;
+
+                salvarRecord();
+            }
+        }
+
+        function salvarRecord() {
+            let infosRecord = localStorage.getItem("recordyahtzee");
+            let record;
+            const date = new Date();
+
+            if (infosRecord == undefined) {
+                const nome = prompt(`Novo record! ${totalDePontos} pontos.\n\nDigite deu nome:`);
+                const data = `${date.getDate()}/${String(date.getMonth() + 1).padStart(2, "0")}/${date.getFullYear()}`;
+                const pontos = totalDePontos;
+                record = { nome, data, pontos };
+                localStorage.setItem("recordyahtzee", JSON.stringify(record));
+            } else {
+                record = JSON.parse(infosRecord);
+
+                if (totalDePontos > record.pontos) {
+                    record.nome = prompt(`Novo record! ${totalDePontos} pontos.\n\nDigite deu nome:`);
+                    record.data = `${date.getDate()}/${String(date.getMonth() + 1).padStart(2, "0")}/${date.getFullYear()}`;
+                    record.pontos = totalDePontos;
+                    localStorage.setItem("recordyahtzee", JSON.stringify(record));
+                }
             }
         }
     </script>
