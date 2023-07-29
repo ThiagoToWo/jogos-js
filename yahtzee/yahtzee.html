@@ -14,7 +14,7 @@
 
         #container {
             width: 100%;
-            max-width: 350px;
+            max-width: 360px;
             border: solid 1px;
             background-color: #ccc;
         }
@@ -49,7 +49,7 @@
             justify-content: center;
             align-items: center;
             margin: 0px 1px;
-            font-size: 32px;
+            font-weight: bold;
         }
 
         #jogadas {
@@ -83,7 +83,7 @@
         }
 
         .selecionado {
-            background-color: #333;
+            background-color: #666;
         }
 
         .livre {
@@ -98,6 +98,15 @@
         <header>
             <div id="menu">
                 <button id="novo">Novo Jogo</button>
+                <hr>
+                <label for="estilo">Estilos:</label>
+                <select id="estilo">
+                    <option value="numeros">Números</option>
+                    <option value="pontos">Pontos</option>
+                    <option value="flores">Flores</option>
+                    <option value="dados-numericos">Dados e Números</option>
+                </select>
+                <hr>
                 <label for="infos">Informações:</label>
                 <select id="infos">
                     <option value="nulo">------</option>
@@ -187,6 +196,7 @@
 
     <script>
         const btNovoJogo = document.querySelector("#novo");
+        const slEstilo = document.querySelector("#estilo");
         const slInfo = document.querySelector("#infos");
         const dvDados = document.querySelectorAll("[name='dado']");
         const btJogadas = document.querySelectorAll("[name='jogada']");
@@ -196,9 +206,36 @@
         let roladas = 3;
         let numJogadas = 0;
         let totalDePontos = 0;
-        const dadosNaMesa = [];
+        const dados = ["", "", "", "", "", ""];
+        const imgDados = {
+            numeros: ["1", "2", "3", "4", "5", "6"],
+            pontos: [
+                "&nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp;<br>&nbsp;&nbsp; &bull; &nbsp;&nbsp;<br>&nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp;",
+                "&bull; &nbsp;&nbsp; &nbsp;&nbsp;<br>&nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp;<br>&nbsp;&nbsp; &nbsp;&nbsp; &bull;",
+                "&bull; &nbsp;&nbsp; &nbsp;&nbsp;<br>&nbsp;&nbsp; &bull; &nbsp;&nbsp;<br>&nbsp;&nbsp; &nbsp;&nbsp; &bull;",
+                "&bull; &nbsp;&nbsp; &bull;<br>&nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp;<br>&bull; &nbsp;&nbsp; &bull;",
+                "&bull; &nbsp;&nbsp; &bull;<br>&nbsp;&nbsp; &bull; &nbsp;&nbsp;<br>&bull; &nbsp;&nbsp; &bull;",
+                "&bull; &nbsp;&nbsp; &bull;<br>&bull; &nbsp;&nbsp; &bull;<br>&bull; &nbsp;&nbsp; &bull;"
+            ],
+            flores: [
+                "&nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp;<br>&nbsp;&nbsp; &#10048; &nbsp;&nbsp;<br>&nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp;",
+                "&#10048; &nbsp;&nbsp; &nbsp;&nbsp;<br>&nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp;<br>&nbsp;&nbsp; &nbsp;&nbsp; &#10048;",
+                "&#10048; &nbsp;&nbsp; &nbsp;&nbsp;<br>&nbsp;&nbsp; &#10048; &nbsp;&nbsp;<br>&nbsp;&nbsp; &nbsp;&nbsp; &#10048;",
+                "&#10048; &nbsp;&nbsp; &#10048;<br>&nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp;<br>&#10048; &nbsp;&nbsp; &#10048;",
+                "&#10048; &nbsp;&nbsp; &#10048;<br>&nbsp;&nbsp; &#10048; &nbsp;&nbsp;<br>&#10048; &nbsp;&nbsp; &#10048;",
+                "&#10048; &nbsp;&nbsp; &#10048;<br>&#10048; &nbsp;&nbsp; &#10048;<br>&#10048; &nbsp;&nbsp; &#10048;"
+            ],
+            dadosNumericos: [
+                "&nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp;<br>&nbsp;&nbsp; 1 &nbsp;&nbsp;<br>&nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp;",
+                "2 &nbsp;&nbsp; &nbsp;&nbsp;<br>&nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp;<br>&nbsp;&nbsp; &nbsp;&nbsp; 2",
+                "3 &nbsp;&nbsp; &nbsp;&nbsp;<br>&nbsp;&nbsp; 3 &nbsp;&nbsp;<br>&nbsp;&nbsp; &nbsp;&nbsp; 3",
+                "4 &nbsp;&nbsp; 4<br>&nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp;<br>4 &nbsp;&nbsp; 4",
+                "5 &nbsp;&nbsp; 5<br>&nbsp;&nbsp; 5 &nbsp;&nbsp;<br>5 &nbsp;&nbsp; 5",
+                "6 &nbsp;&nbsp; 6<br>6 &nbsp;&nbsp; 6<br>6 &nbsp;&nbsp; 6"
+            ]
+        }
         const autor = "Thiago de Oliveira Alves\ntowo497@gmail.com";
-        const versao = "versão 1.0\n15/07/2023";
+        const versao = "versão 2.0\n29/07/2023";
         const regras = "Como Jogar\n\n" +
             "O jogo consiste em 13 rodadas. Em cada rodada, você joga os dados e então marca uma das 13 categorias.\n" +
             "Você tem que marcar uma categoria em cada rodada, o que significa que para o fim do jogo você pode ter" +
@@ -239,6 +276,12 @@
             "- Quina: 5 iguais. Vale 50 pontos.\n" +
             "- Reserva: qualquer combinação. Vale a soma dos dados.";
 
+        btNovoJogo.addEventListener("click", () => {
+            window.location.reload();
+        });
+
+        slEstilo.addEventListener("change", colocarImagensDosDados());
+
         slInfo.addEventListener("change", () => {
             const index = slInfo.selectedIndex;
 
@@ -257,7 +300,7 @@
                     break;
                 case 4:
                     // mostrar dialog de record
-                    const record= JSON.parse(localStorage.getItem("recordyahtzee"));
+                    const record = JSON.parse(localStorage.getItem("recordyahtzee"));
                     let infosRecord;
 
                     if (record == undefined) {
@@ -270,10 +313,6 @@
             }
 
             slInfo.selectedIndex = 0;
-        });
-
-        btNovoJogo.addEventListener("click", () => {
-            window.location.reload();
         });
 
         deixarLivre(dvDados);
@@ -308,6 +347,7 @@
 
         function deixarLivre(elementos) {
             for (const el of elementos) {
+                el.innerHTML = "";
                 el.className = "livre";
             }
         }
@@ -337,33 +377,33 @@
             dialog.showModal();
         }
 
+        function mudarTamanhoDaFonte(elementos, tamanho) {
+            for (const el of elementos) {
+                if (el.style.fontSize == tamanho) break;
+                el.style.fontSize = tamanho;
+            }
+        }
+
         // funções para a lógica do jogo
         function rolarDados() {
-            const dados = [];
             habilitarClique(dvDados);
 
             if (roladas > 0) {
                 btContar.disabled = false;
 
                 for (let i = 0; i < 5; i++) {
-                    dados[i] = Math.floor(1 + Math.random() * 6);
-                }
-
-                for (let i = 0; i < dvDados.length; i++) {
-                    if (dvDados[i].className == "livre") {
-                        dvDados[i].innerText = dados[i];
+                    if (dvDados[i].className != "selecionado") {
+                        dados[i] = Math.floor(1 + Math.random() * 6);
                     }
                 }
+
+                colocarImagensDosDados();
 
                 roladas--;
                 btRolar.innerText = `Rolar (${roladas})`;
             }
 
-            for (let i = 0; i < dvDados.length; i++) {
-                dadosNaMesa[i] = Number(dvDados[i].innerText);
-            }
-
-            const resultados = contarJogadas(dadosNaMesa);
+            const resultados = contarJogadas(dados);
 
             for (let i = 0; i < btJogadas.length; i++) {
                 if (!btJogadas[i].disabled) {
@@ -371,6 +411,34 @@
                 }
             }
 
+        }
+
+        function colocarImagensDosDados() {
+            const index = slEstilo.selectedIndex;
+            let estilo;
+
+            switch (index) {
+                case 0:
+                    mudarTamanhoDaFonte(dvDados, "32px");
+                    estilo = imgDados.numeros;
+                    break;
+                case 1:
+                    mudarTamanhoDaFonte(dvDados, "16px");
+                    estilo = imgDados.pontos;
+                    break;
+                case 2:
+                    mudarTamanhoDaFonte(dvDados, "12px");
+                    estilo = imgDados.flores;
+                    break;
+                case 3:
+                    mudarTamanhoDaFonte(dvDados, "16px");
+                    estilo = imgDados.dadosNumericos;
+                    break;
+            }
+
+            for (let i = 0; i < dvDados.length; i++) {
+                dvDados[i].innerHTML = estilo[dados[i] - 1];
+            }
         }
 
         function contarJogadas(dados) {
@@ -469,10 +537,7 @@
                     spTotal.innerText = totalDePontos;
                     bt.disabled = "true";
 
-                    for (const dv of dvDados) {
-                        dv.innerText = "";
-                        dv.className = "livre"
-                    }
+                    deixarLivre(dvDados);
 
                     for (const bt of btJogadas) {
                         bt.className = "";
