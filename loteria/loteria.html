@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Loteria</title>
+    <style>
+        body {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="container">
+        <h1>Loteria</h1>
+        <p>
+            Insira os números separados por espaço em branco.
+        </p>
+        <hr>
+        <h2>Loto Fácil</h2>
+        <form id="frmLotoFacil">
+            <p>Aposta (15 a 20 números):
+                <input type="text" id="inNumLotoFacil" required autofocus>
+            </p>
+            <p>
+                Ganha com 11 a 16 acertos.
+            </p>
+            <input type="submit" value="Jogar">
+        </form>
+        <h3 id="h3SortLotoFacil">Sorteados:</h3>
+        <h3 id="h3AcertLotoFacil">Acertos:</h3>
+        <hr>
+        <h2>Mega Sena</h2>
+        <form id="frmMegaSena">
+            <p>Aposta (6 números):
+                <input type="text" id="inNumMegaSena" required autofocus>
+            </p>
+            <p>
+                Ganha com 4 a 6 acertos.
+            </p>
+            <input type="submit" value="Jogar">
+        </form>
+        <h3 id="h3SortMegaSena">Sorteados:</h3>
+        <h3 id="h3AcertMegaSena">Acertos:</h3>
+    </div>
+
+    <script>
+        const formLotoFacil = document.querySelector("#frmLotoFacil");
+        const h3SortLotoFacil = document.querySelector("#h3SortLotoFacil");
+        const h3AcertLotoFacil = document.querySelector("#h3AcertLotoFacil");
+        const formMegaSena = document.querySelector("#frmMegaSena");
+        const h3SortMegaSena = document.querySelector("#h3SortMegaSena");
+        const h3AcertMegaSena = document.querySelector("#h3AcertMegaSena");
+
+        
+        
+        formLotoFacil.addEventListener("submit", (e) => {
+            e.preventDefault();
+
+            const cartela = [];
+            const sorteados = [];
+            const acertos = [];
+
+            encherCartela(cartela, 25)
+
+            const txtNumeros = formLotoFacil.inNumLotoFacil.value.trim();
+            const aposta = txtNumeros.split(" ");
+
+            sortearNumerosDaCartela(sorteados, cartela, 15, 25);            
+
+            contarAcertos(aposta, sorteados, acertos);
+            
+            h3SortLotoFacil.innerText = "Sorteados: " + sorteados.join(" ");
+            h3AcertLotoFacil.innerText = "Acertos: " + acertos.join(" ") + ` (${acertos.length} acertos)`;
+        });
+
+        formMegaSena.addEventListener("submit", (e) => {
+            e.preventDefault();
+
+            const cartela = [];
+            const sorteados = [];
+            const acertos = [];
+
+            encherCartela(cartela, 60)
+
+            const txtNumeros = formMegaSena.inNumMegaSena.value.trim();
+            const aposta = txtNumeros.split(" ");
+
+            sortearNumerosDaCartela(sorteados, cartela, 6, 60);            
+
+            contarAcertos(aposta, sorteados, acertos);
+            
+            h3SortMegaSena.innerText = "Sorteados: " + sorteados.join(" ");
+            h3AcertMegaSena.innerText = "Acertos: " + acertos.join(" ") + ` (${acertos.length} acertos)`;
+        });
+
+        // funções úteis
+        function encherCartela(array, n) {
+            for (let i = 0; i < n; i++) {
+                array[i] = i + 1;
+            }
+        }
+
+        function sortearNumerosDaCartela(sorteados, cartela, n, total) {
+            let idx = Math.floor(1 + Math.random() * total);
+            sorteados.push(cartela[idx]);
+            cartela[idx] = 0;
+
+            for (let i = 1; i < n; i++) {
+                do {
+                    idx = Math.floor(1 + Math.random() * total);
+                } while (cartela[idx] == 0);
+
+                sorteados.push(cartela[idx]);
+                cartela[idx] = 0;
+            }
+
+            sorteados.sort((a, b) => a - b);
+        }
+
+        function contarAcertos(aposta, sorteados, acertos) {
+            for (let i = 0; i < aposta.length; i++) {
+                if (sorteados.includes(Number(aposta[i]))) {
+                    acertos.push(aposta[i]);
+                }
+            }
+        }
+    </script>
+</body>
+<html>
