@@ -23,6 +23,7 @@
         <hr>
         <h2>Loto Fácil</h2>
         <form id="frmLotoFacil">
+            <p>Cartela com números de 1 a 25.</p>
             <p>Aposta (15 a 20 números):
                 <input type="text" id="inNumLotoFacil" required autofocus>
             </p>
@@ -36,6 +37,7 @@
         <hr>
         <h2>Mega Sena</h2>
         <form id="frmMegaSena">
+            <p>Cartela com números de 1 a 60.</p>
             <p>Aposta (6 números):
                 <input type="text" id="inNumMegaSena" required autofocus>
             </p>
@@ -72,10 +74,10 @@
 
             sortearNumerosDaCartela(sorteados, cartela, 15, 25);            
 
-            contarAcertos(aposta, sorteados, acertos);
+            const numAcertos = contarAcertos(aposta, sorteados, acertos);
             
             h3SortLotoFacil.innerText = "Sorteados: " + sorteados.join(" ");
-            h3AcertLotoFacil.innerText = "Acertos: " + acertos.join(" ") + ` (${acertos.length} acertos)`;
+            h3AcertLotoFacil.innerText = "Acertos: " + acertos.join(" ") + ` (${numAcertos} acerto(s))`;
         });
 
         formMegaSena.addEventListener("submit", (e) => {
@@ -92,10 +94,10 @@
 
             sortearNumerosDaCartela(sorteados, cartela, 6, 60);            
 
-            contarAcertos(aposta, sorteados, acertos);
+            const numAcertos = contarAcertos(aposta, sorteados, acertos);
             
             h3SortMegaSena.innerText = "Sorteados: " + sorteados.join(" ");
-            h3AcertMegaSena.innerText = "Acertos: " + acertos.join(" ") + ` (${acertos.length} acertos)`;
+            h3AcertMegaSena.innerText = "Acertos: " + acertos.join(" ") + ` (${numAcertos} acerto(s))`;
         });
 
         // funções úteis
@@ -128,6 +130,8 @@
                     acertos.push(aposta[i]);
                 }
             }
+
+            return acertos.length;
         }
     </script>
 </body>
