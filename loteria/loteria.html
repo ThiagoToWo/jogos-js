@@ -25,10 +25,13 @@
         <form id="frmLotoFacil">
             <p>Cartela com números de 1 a 25.</p>
             <p>Aposta (15 a 20 números):
-                <input type="text" id="inNumLotoFacil" required autofocus>
+                <input type="text" id="inNumLotoFacil" size="50" required autofocus>
+            </p>
+            <p>Quantos jogos?
+                <input type="number" id="inNumJogosLotoFacil" min="1" max="1000000" step="1" value="1" required>
             </p>
             <p>
-                Ganha com 11 a 16 acertos.
+                São sorteados 15 números. Ganha com 11 a 15 acertos.
             </p>
             <input type="submit" value="Jogar">
         </form>
@@ -38,11 +41,14 @@
         <h2>Mega Sena</h2>
         <form id="frmMegaSena">
             <p>Cartela com números de 1 a 60.</p>
-            <p>Aposta (6 números):
-                <input type="text" id="inNumMegaSena" required autofocus>
+            <p>Aposta (6 a 20 números):
+                <input type="text" id="inNumMegaSena" size="50" required autofocus>
+            </p>
+            <p>Quantos jogos?
+                <input type="number" id="inNumJogosMegaSena" min="1" max="1000000" step="1" value="1" required>
             </p>
             <p>
-                Ganha com 4 a 6 acertos.
+                São sorteados 6 números. Ganha com 4 a 6 acertos.
             </p>
             <input type="submit" value="Jogar">
         </form>
@@ -58,63 +64,94 @@
         const h3SortMegaSena = document.querySelector("#h3SortMegaSena");
         const h3AcertMegaSena = document.querySelector("#h3AcertMegaSena");
 
-        
-        
         formLotoFacil.addEventListener("submit", (e) => {
             e.preventDefault();
+            const freq = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
 
-            const cartela = [];
-            const sorteados = [];
-            const acertos = [];
-
-            encherCartela(cartela, 25)
-
-            const txtNumeros = formLotoFacil.inNumLotoFacil.value.trim();
-            const aposta = txtNumeros.split(" ");
-
-            sortearNumerosDaCartela(sorteados, cartela, 15, 25);            
-
-            const numAcertos = contarAcertos(aposta, sorteados, acertos);
-            
-            h3SortLotoFacil.innerText = "Sorteados: " + sorteados.join(" ");
-            h3AcertLotoFacil.innerText = "Acertos: " + acertos.join(" ") + ` (${numAcertos} acerto(s))`;
+            jogar(
+                formLotoFacil.inNumLotoFacil, 
+                formLotoFacil.inNumJogosLotoFacil,
+                15,
+                25,
+                freq,
+                h3SortLotoFacil,
+                h3AcertLotoFacil
+            );
         });
 
         formMegaSena.addEventListener("submit", (e) => {
             e.preventDefault();
+            const freq = [0,0,0,0,0,0,0];
 
-            const cartela = [];
-            const sorteados = [];
-            const acertos = [];
-
-            encherCartela(cartela, 60)
-
-            const txtNumeros = formMegaSena.inNumMegaSena.value.trim();
-            const aposta = txtNumeros.split(" ");
-
-            sortearNumerosDaCartela(sorteados, cartela, 6, 60);            
-
-            const numAcertos = contarAcertos(aposta, sorteados, acertos);
-            
-            h3SortMegaSena.innerText = "Sorteados: " + sorteados.join(" ");
-            h3AcertMegaSena.innerText = "Acertos: " + acertos.join(" ") + ` (${numAcertos} acerto(s))`;
+            jogar(
+                formMegaSena.inNumMegaSena, 
+                formMegaSena.inNumJogosMegaSena,
+                6,
+                60,
+                freq,
+                h3SortMegaSena,
+                h3AcertMegaSena
+            );
         });
 
         // funções úteis
+        function jogar(inAposta, inNumJogos, tamanhoSorteio, tamanhoCartela, frequencia, outSorteados, outAcertos) {
+            let cartela;
+            let sorteados;
+            let acertos;
+            
+            const txtNumeros = inAposta.value.trim();
+            const aposta = txtNumeros.split(" ");
+            const numJogos = Number(inNumJogos.value);
+
+            if (numJogos == 1) {
+                cartela = [];
+                sorteados = [];
+                acertos = [];
+
+                encherCartela(cartela, tamanhoCartela);
+                sortearNumerosDaCartela(sorteados, cartela, tamanhoSorteio);
+                const numAcertos = contarAcertos(aposta, sorteados, acertos);
+
+                outSorteados.innerText = "Sorteados: " + sorteados.join(" ");
+                outAcertos.innerText = "Acertos: " + acertos.join(" ") + ` (${numAcertos} acerto(s))`;
+            } else {
+                for (let jogo = 1; jogo <= numJogos; jogo++) {
+                    cartela = [];
+                    sorteados = [];
+                    acertos = [];
+
+                    encherCartela(cartela, tamanhoCartela);
+                    sortearNumerosDaCartela(sorteados, cartela, tamanhoSorteio);
+                    const numAcertos = contarAcertos(aposta, sorteados, acertos);
+                    frequencia[numAcertos]++;
+                }
+
+                let out = "";
+
+                for (let i = 0; i < frequencia.length; i++) {
+                    out += `\n${String(i).padStart(2, "0")}: ${frequencia[i]}`;
+                }
+
+                outSorteados.innerText = "Sorteados: vários";
+                outAcertos.innerText = "Acertos: " + out;
+            }
+        }
+
         function encherCartela(array, n) {
             for (let i = 0; i < n; i++) {
                 array[i] = i + 1;
             }
         }
 
-        function sortearNumerosDaCartela(sorteados, cartela, n, total) {
-            let idx = Math.floor(1 + Math.random() * total);
+        function sortearNumerosDaCartela(sorteados, cartela, n) {
+            let idx = Math.floor(Math.random() * cartela.length);
             sorteados.push(cartela[idx]);
             cartela[idx] = 0;
 
             for (let i = 1; i < n; i++) {
                 do {
-                    idx = Math.floor(1 + Math.random() * total);
+                    idx = Math.floor(Math.random() * cartela.length);
                 } while (cartela[idx] == 0);
 
                 sorteados.push(cartela[idx]);
