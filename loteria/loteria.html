@@ -28,7 +28,7 @@
                 <input type="text" id="inNumLotoFacil" size="40" required autofocus>
             </p>
             <p>Quantos jogos?
-                <input type="number" id="inNumJogosLotoFacil" min="1" max="1000000" step="1" value="1" required>
+                <input type="number" id="inNumJogosLotoFacil" min="1" max="10000000" step="1" value="1" required>
             </p>
             <p>
                 São sorteados 15 números. Ganha com 11 a 15 acertos.
@@ -45,7 +45,7 @@
                 <input type="text" id="inNumMegaSena" size="40" required autofocus>
             </p>
             <p>Quantos jogos?
-                <input type="number" id="inNumJogosMegaSena" min="1" max="1000000" step="1" value="1" required>
+                <input type="number" id="inNumJogosMegaSena" min="1" max="10000000" step="1" value="1" required>
             </p>
             <p>
                 São sorteados 6 números. Ganha com 4 a 6 acertos.
@@ -66,10 +66,10 @@
 
         formLotoFacil.addEventListener("submit", (e) => {
             e.preventDefault();
-            const freq = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
+            const freq = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 
             jogar(
-                formLotoFacil.inNumLotoFacil, 
+                formLotoFacil.inNumLotoFacil,
                 formLotoFacil.inNumJogosLotoFacil,
                 15,
                 25,
@@ -81,10 +81,10 @@
 
         formMegaSena.addEventListener("submit", (e) => {
             e.preventDefault();
-            const freq = [0,0,0,0,0,0,0];
+            const freq = [0, 0, 0, 0, 0, 0, 0];
 
             jogar(
-                formMegaSena.inNumMegaSena, 
+                formMegaSena.inNumMegaSena,
                 formMegaSena.inNumJogosMegaSena,
                 6,
                 60,
@@ -99,7 +99,7 @@
             let cartela;
             let sorteados;
             let acertos;
-            
+
             const txtNumeros = inAposta.value.trim();
             const aposta = txtNumeros.split(" ");
             const numJogos = Number(inNumJogos.value);
@@ -136,29 +136,26 @@
                 outSorteados.innerText = "Sorteados: vários";
                 outAcertos.innerText = "Acertos: " + out;
             }
+        }        
+
+        function sortearNumerosDaCartela(sorteados, cartela, tamanhoSorteio) {
+            let idxMax = cartela.length - 1;
+
+            for (let i = tamanhoSorteio; i > 0; i--) {
+                idx = Math.floor(Math.random() * (idxMax + 1));
+
+                sorteados.push(cartela[idx]);
+                cartela[idx] = cartela[idxMax - 1];
+                idxMax--;
+            }
+
+            sorteados.sort((a, b) => a - b);
         }
 
         function encherCartela(array, n) {
             for (let i = 0; i < n; i++) {
                 array[i] = i + 1;
             }
-        }
-
-        function sortearNumerosDaCartela(sorteados, cartela, n) {
-            let idx = Math.floor(Math.random() * cartela.length);
-            sorteados.push(cartela[idx]);
-            cartela[idx] = 0;
-
-            for (let i = 1; i < n; i++) {
-                do {
-                    idx = Math.floor(Math.random() * cartela.length);
-                } while (cartela[idx] == 0);
-
-                sorteados.push(cartela[idx]);
-                cartela[idx] = 0;
-            }
-
-            sorteados.sort((a, b) => a - b);
         }
 
         function contarAcertos(aposta, sorteados, acertos) {
