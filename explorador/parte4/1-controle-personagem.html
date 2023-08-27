@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>O Explorador Box Jones</title>
+    <style>
+        body {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: Georgia, 'Times New Roman', Times, serif;
+        }
+
+        canvas {
+            background-color: #000;
+        }
+
+        #botoes {
+            display: flex;
+        }
+
+        #btEsquerda,
+        #btDireita {
+            background-color: #000;
+            color: #fff;
+            width: 70px;
+            height: 70px;
+            margin: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+            border-radius: 5px;
+        }
+
+        #btEsquerda:active,
+        #btDireita:active {
+            background-color: #999;
+            color: #000;
+        }
+
+        #btPular {
+            background-color: #900;
+            width: 70px;
+            height: 70px;
+            margin: 15px 60px;
+            border-radius: 36px;
+            border: solid 2px #000;
+        }
+
+        #btPular:active {
+            background-color: #f00;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="container">
+        <h1>O Explorador Box Jones</h1>
+        <p>Colete todas as moedas para mudar de fase.</p>
+        <canvas id="canvas" width="360" height="360"></canvas>
+        <div id="botoes">
+            <div id="btEsquerda">&LeftArrow;</div>
+            <div id="btDireita">&RightArrow;</div>
+            <div id="btPular"></div>
+        </div>
+    </div>
+    <script>
+        // Engine
+        let explorador;
+        const pressionados = [];
+
+        window.addEventListener("keydown", (e) => {
+            switch (e.key) {
+                case "ArrowLeft": pressionados[0] = true; break;
+                case "ArrowRight": pressionados[1] = true; break;
+            }
+        });
+
+        window.addEventListener("keyup", (e) => {
+            switch (e.key) {
+                case "ArrowLeft": pressionados[0] = false; break;
+                case "ArrowRight": pressionados[1] = false; break;
+            }
+        });
+
+        function iniciarJogo() {
+            requestAnimationFrame(iniciarJogo, canvas);
+
+            processarJogo();
+
+            renderizar();
+        }
+
+        function processarJogo() {
+            explorador.atualizar();
+
+            if (explorador.x < 0) {
+                explorador.x = 0;
+            }
+
+            if (explorador.x + explorador.w > canvas.width) {
+                explorador.x = canvas.width - explorador.w;
+            }
+        }
+
+        function renderizar() {
+            context.clearRect(0, 0, canvas.width, canvas.height);
+
+            explorador.desenhar();
+        }
+
+        // Elementos
+        class Box {
+            constructor(x, y, w, h, vx, vy, cor, context) {
+                this.x = x;
+                this.y = y;
+                this.w = w;
+                this.h = h;
+                this.vx = vx;
+                this.vy = vy;
+                this.cor = cor;
+                this.ctx = context;
+            }
+
+            atualizar() {
+                if (pressionados[0]) { // esquerda                    
+                    this.x -= this.vx;
+                }
+
+                if (pressionados[1]) { // direita
+                    this.x += this.vx;
+                }
+            }
+
+            desenhar() {
+                this.ctx.save();
+                this.ctx.fillStyle = this.cor;
+                this.ctx.fillRect(this.x, this.y, this.w, this.h);
+                this.ctx.restore();
+            }
+        }
+
+        const canvas = document.querySelector("#canvas");
+        const context = canvas.getContext("2d");
+
+        explorador = new Box(100, 100, 5, 10, 5, 10, "#fff", context);
+
+        iniciarJogo();
+    </script>
+</body>
+
+</html>
