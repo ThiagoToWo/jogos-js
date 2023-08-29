@@ -17,13 +17,20 @@
         }
 
         #botoes {
-            display: grid;
-            grid-template-columns: 25% 25% 25% 25%;
-            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 30%;
+        }
+
+        #verticais button {
+            display: block;
         }
 
         button {
             font-weight: bold;
+            width: 80px;
+            height: 80px;
         }
     </style>
 
@@ -303,10 +310,14 @@
         <canvas id="canvas" width="360" height="400"></canvas>
         <h3>Tamanho: <span id="spnTamanho"></span></h3>
         <div id="botoes">
-            <button id="btEsquerda">Esquerda</button>
-            <button id="btDireita">Direita</button>
-            <button id="btCima">Cima</button>
-            <button id="btBaixo">Baixo</button>
+            <div id="horizontais">
+                <button id="btEsquerda">Esquerda</button>
+                <button id="btDireita">Direita</button>
+            </div>
+            <div id="verticais">
+                <button id="btCima">Cima</button>
+                <button id="btBaixo">Baixo</button>
+            </div>            
         </div>
     </div>
 
@@ -360,7 +371,7 @@
         canvas = document.querySelector("#canvas");
         context = canvas.getContext("2d");
 
-        setInterval(iniciarJogo, 120);
+        setInterval(iniciarJogo, 200);
     </script>
 </body>
 
