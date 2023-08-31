@@ -10,6 +10,8 @@
             display: flex;
             align-items: center;
             justify-content: center;
+            text-align: center;
+            font-family: Georgia, 'Times New Roman', Times, serif;
         }
 
         canvas {
@@ -32,16 +34,21 @@
             width: 80px;
             height: 80px;
         }
+
+        span {
+            margin: 20px;
+        }
     </style>
 
     <script id="engine">
         // Engine
         let canvas;
         let context;
-        let log; // marca os pontos e mostra informações do jogo
+        const logs = []; // marca os pontos e mostra informações do jogo
 
         let cobrinha;
         let maca;
+        let record;
 
         const CARREGANDO = 0;
         const JOGANDO = 1;
@@ -114,13 +121,17 @@
         }
 
         function carregarJogo() {
+            record = localStorage.getItem("record-cobrinha") || 1;
+
             const xc = canvas.width / 2;
             const yc = canvas.height / 2;
 
             cobrinha = new Cobrinha(xc, yc, W, W, context);
             maca = new Maca(W, W, context);
 
-            log.innerText = cobrinha.corpo.length;
+            logs[0].innerText = cobrinha.corpo.length;
+            logs[1].innerText = record;
+
             console.log("Jogo Carregado", "maçã.x:", maca.x, "maçã.y:", maca.y);
         }
 
@@ -141,7 +152,13 @@
 
                 maca = new Maca(W, W, context);
 
-                log.innerText = cobrinha.corpo.length;
+                logs[0].innerText = cobrinha.corpo.length;
+
+                if (cobrinha.corpo.length > record) {
+                    record = cobrinha.corpo.length;
+                    logs[1].innerText = record;
+                    localStorage.setItem("record-cobrinha", record);
+                }
             }
 
             for (let i = 2; i < cobrinha.corpo.length; i++) {
@@ -288,7 +305,7 @@
     <div id="container">
         <h1>Jogo da Cobrinha</h1>
         <canvas id="canvas" width="360" height="400"></canvas>
-        <h3>Tamanho: <span id="spnTamanho"></span></h3>
+        <h3>Tamanho: <span id="spnTamanho"></span> Record: <span id="spnRecord"></span></h3>
         <div id="botoes">
             <div id="horizontais">
                 <button id="btEsquerda">Esquerda</button>
@@ -306,7 +323,8 @@
         const btDireita = document.querySelector("#btDireita");
         const btCima = document.querySelector("#btCima");
         const btBaixo = document.querySelector("#btBaixo");
-        log = document.querySelector("#spnTamanho");
+        logs[0] = document.querySelector("#spnTamanho");
+        logs[1] = document.querySelector("#spnRecord");
 
         btEsquerda.addEventListener("click", (e) => {
             e.preventDefault();
