@@ -1,4 +1,6 @@
 // Engine
+let canvas;
+let context;
 
 // Símbolos do cenário
 const EXPLORADOR = "@";
@@ -232,7 +234,7 @@ function renderizar() {
 // Pausa por um intervalo de milessegundos
 function pausarPor(ms) {
     const t0 = new Date().getTime();
-    let t = 0;
+    let t = new Date().getTime();
 
     while (t - t0 < ms) {
         t = new Date().getTime();

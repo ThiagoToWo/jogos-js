@@ -1,4 +1,6 @@
 // Engine
+let canvas;
+let context;
 
 // Símbolos do cenário
 const EXPLORADOR = "@";

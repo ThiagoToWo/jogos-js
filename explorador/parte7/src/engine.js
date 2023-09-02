@@ -1,4 +1,7 @@
 // Engine
+let canvas;
+let context;
+
 let explorador;
 const moedas = [];
 const lavas = [];
