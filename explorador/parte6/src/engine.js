@@ -5,6 +5,7 @@ let context;
 let explorador;
 const moedas = [];
 const lavas = [];
+const blocos = [];
 const pressionados = [];
 
 const G = 0.4; // Gravidade
@@ -69,12 +70,31 @@ function processarJogo() {
         }
     }
 
+    for (const bloco of blocos) {
+        const ladoDoExplorador = explorador.colidiuComBloco(bloco);
+
+        if (ladoDoExplorador == "baixo" && explorador.vy >= 0) {
+            explorador.noSolo = true;
+            explorador.vy = 0;
+        } else if (ladoDoExplorador == "cima" && explorador.vy <= 0) {
+            explorador.vy = 0;
+        } else if (ladoDoExplorador == "direita" && explorador.vy >= 0) {
+            explorador.vx = 0; // Exigirá reiniciação
+        } else if (ladoDoExplorador == "esquerda" && explorador.vy <= 0) {
+            explorador.vx = 0; // Exigirá reiniciação
+        }
+
+        if (ladoDoExplorador != "baixo" && explorador.vy > 0) {
+            explorador.noSolo = false;
+        }
+    }
+
     if (explorador.x < 0) {
         explorador.x = 0;
     }
 
     if (explorador.x + explorador.w > canvas.width) {
-        explorador.x = canvas.width - explorador.w;                
+        explorador.x = canvas.width - explorador.w;
     }
 
     if (explorador.y + explorador.h > canvas.height) {
@@ -101,5 +121,9 @@ function renderizar() {
 
     for (const lava of lavas) {
         lava.desenhar();
+    }
+
+    for (const bloco of blocos) {
+        bloco.desenhar();
     }
 }

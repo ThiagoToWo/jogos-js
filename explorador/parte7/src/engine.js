@@ -2,20 +2,37 @@
 let canvas;
 let context;
 
-let explorador;
-const moedas = [];
-const lavas = [];
-const blocos = [];
-const pressionados = [];
+// Símbolos do cenário
+const EXPLORADOR = "@";
+const MOEDA = "m";
+const LAVA = "l";
+const LAVA_MOVEL_VERTICAL1 = "v"; // Amplitude de movimento 5 * W
+const LAVA_MOVEL_HORIZONTAL1 = "h"; // Amplitude de movimento 5 * W
+const LAVA_MOVEL_VERTICAL2 = "V"; // Amplitude de movimento 10 * W
+const LAVA_MOVEL_HORIZONTAL2 = "H"; // Amplitude de movimento 10 * W
+const BLOCO = "b";
+
+const W = 5; // lado de qualquer elemento quadrado do cenário
 
 const G = 0.4; // Gravidade
+const VT = 4; // Velocidade Terminal
+
+// Estruturas de dados fundamentais
+let explorador;
+let moedas;
+let lavas;
+let blocos;
+const pressionados = [];
+let cenarioAtual // guarda o índice do cenário atual
 
 // Estados do jogo
+const CARREGANDO = 0;
 const JOGANDO = 1;
 const MORREU = 2;
 
-let estadoAtual = JOGANDO;
+let estadoAtual = CARREGANDO;
 
+// Configura os controles
 window.addEventListener("keydown", (e) => {
     switch (e.key) {
         case "ArrowLeft": pressionados[0] = true; break;
@@ -32,22 +49,79 @@ window.addEventListener("keyup", (e) => {
     }
 });
 
+// Função principal de controle de estados do jogo
 function iniciarJogo() {
     requestAnimationFrame(iniciarJogo, canvas);
 
     switch (estadoAtual) {
+        case CARREGANDO:
+            carregarJogo(cenarios[cenarioAtual]);
+            estadoAtual = JOGANDO;
+            break;
         case JOGANDO:
             processarJogo();
             break;
         case MORREU:
             processarMorte();
-            return;
+            estadoAtual = CARREGANDO;
+            break;
     }
 
     renderizar();
 }
 
+// Funçoes de processamentos
+function carregarJogo(cenario) {
+    explorador = null;
+    moedas = [];
+    lavas = [];
+    blocos = [];
+
+    for (let linha = 0; linha < cenario.length; linha++) {
+        for (let letra = 0; letra < cenario[linha].length; letra++) {
+            const simbolo = cenario[linha][letra];
+            const x = letra * W;
+            const y = linha * W;
+
+            switch (simbolo) {
+                case EXPLORADOR:
+                    explorador = new Explorador(x, y - W, context);
+                    break;
+                case MOEDA:
+                    const moeda = new Moeda(x, y - W, context);
+                    moedas.push(moeda);
+                    break;
+                case LAVA:
+                    const lava = new Lava(x, y, 0, 0, 0, 0, context);
+                    lavas.push(lava);
+                    break;
+                case LAVA_MOVEL_VERTICAL1:
+                    const lavaMovelVertical1 = new Lava(x, y, 0, 0.05, 0, 5 * W, context);
+                    lavas.push(lavaMovelVertical1);
+                    break;
+                case LAVA_MOVEL_HORIZONTAL1:
+                    const lavaMovelHorizontal1 = new Lava(x, y, 0.05, 0, 5 * W, 0, context);
+                    lavas.push(lavaMovelHorizontal1);
+                    break;
+                case LAVA_MOVEL_VERTICAL2:
+                    const lavaMovelVertical2 = new Lava(x, y, 0, 0.05, 0, 10 * W, context);
+                    lavas.push(lavaMovelVertical2);
+                    break;
+                case LAVA_MOVEL_HORIZONTAL2:
+                    const lavaMovelHorizontal2 = new Lava(x, y, 0.05, 0, 10 * W, 0, context);
+                    lavas.push(lavaMovelHorizontal2);
+                    break;
+                case BLOCO:
+                    const bloco = new Bloco(x, y, context);
+                    blocos.push(bloco);
+                    break;
+            }
+        }
+    }
+}
+
 function processarJogo() {
+    // Atuaçização dos elementos
     explorador.atualizar();
 
     for (const moeda of moedas) {
@@ -58,6 +132,7 @@ function processarJogo() {
         lava.atualizar();
     }
 
+    // Tratamentos de colisão com objetos do jogo
     for (const moeda of moedas) {
         if (explorador.colidiuCom(moeda)) {
             moedas.splice(moedas.indexOf(moeda), 1);
@@ -89,6 +164,7 @@ function processarJogo() {
         }
     }
 
+    // Tratamento de colisão com os limites físicos do jogo    
     if (explorador.x < 0) {
         explorador.x = 0;
     }
@@ -97,15 +173,17 @@ function processarJogo() {
         explorador.x = canvas.width - explorador.w;
     }
 
+    if (explorador.y < 0) {
+        explorador.y = 0;
+    }
+
     if (explorador.y + explorador.h > canvas.height) {
-        explorador.y = canvas.height - explorador.h;
-        explorador.vy = 0;
-        explorador.noSolo = true;
+        estadoAtual = MORREU
     }
 }
 
 function processarMorte() {
-    explorador.ativoAtualizar = false;
+    explorador.atualizar = false;
     explorador.cor = "#f00";
     explorador.desenhar();
 }

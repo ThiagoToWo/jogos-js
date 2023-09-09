@@ -1,10 +1,10 @@
 class Bloco {
-    constructor(x, y, w, h, cor, context) {
+    constructor(x, y, context) {
         this.x = x;
         this.y = y;
-        this.w = w;
-        this.h = h;
-        this.cor = cor;
+        this.w = 5;
+        this.h = 5;
+        this.cor = "#fff";
         this.ctx = context;
     }
     

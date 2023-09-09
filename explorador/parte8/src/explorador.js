@@ -9,49 +9,36 @@ class Explorador {
         this.vy = 0;
         this.cor = "#0f0";
         this.ctx = context;
-        this.ativoAtualizar = true; // se pode atualizar
-        this.ativoDesenhar = true; // se pode desenhar
-        this.ativoColidir = true; // se pode colidir
+        this.ativoAtualizar = true;
+        this.ativoDesenhar = true;
+        this.ativoColidir = true;
         this.noSolo;
     }
 
     atualizar() {
         if (!this.ativoAtualizar) return;
-        
-        const cw = this.ctx.canvas.width;
 
-        if (pressionados[0]) { // esquerda
+        if (pressionados[0]) {
             this.vx = 1;
-
-            if (this.x > 0) {
-                this.x -= this.vx;
-            } else {
-                this.x = 0;
-            }
+            this.x -= this.vx;
         }
 
-        if (pressionados[1]) { // direita
+        if (pressionados[1]) {
             this.vx = 1;
-
-            if (this.x + this.w < cw) {
-                this.x += this.vx;
-            } else {
-                this.x = cw - this.w;
-            }
+            this.x += this.vx;
         }
 
-        if (pressionados[2] && this.noSolo) { // pular            
+        if (pressionados[2] && this.noSolo) {            
             this.vy = -5;
             this.noSolo = false;
         }
 
-        // sempre sobre a ação da gravidade
         this.vy += G;
         this.y += this.vy;
 
         if (this.vy > VT) {
             this.vy = VT;
-        }
+        }        
     }
 
     desenhar() {
@@ -69,7 +56,7 @@ class Explorador {
         return this.x + this.w > elemento.x &&
             this.x < elemento.x + elemento.w &&
             this.y + this.h > elemento.y &&
-            this.y < elemento.y + elemento.h
+            this.y < elemento.y + elemento.h;
     }
 
     colidiuComBloco(bloco) {

@@ -16,43 +16,6 @@
         canvas {
             background-color: #000;
         }
-
-        #botoes {
-            display: flex;
-        }
-
-        #btEsquerda,
-        #btDireita {
-            background-color: #000;
-            color: #fff;
-            width: 70px;
-            height: 70px;
-            margin: 15px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 40px;
-            border-radius: 5px;
-        }
-
-        #btEsquerda:active,
-        #btDireita:active {
-            background-color: #999;
-            color: #000;
-        }
-
-        #btPular {
-            background-color: #900;
-            width: 70px;
-            height: 70px;
-            margin: 15px 60px;
-            border-radius: 36px;
-            border: solid 2px #000;
-        }
-
-        #btPular:active {
-            background-color: #f00;
-        }
     </style>
 </head>
 
@@ -60,12 +23,8 @@
     <div id="container">
         <h1>O Explorador Box Jones</h1>
         <p>Colete todas as moedas para mudar de fase.</p>
-        <canvas id="canvas" width="360" height="360"></canvas>
-        <div id="botoes">
-            <div id="btEsquerda">&LeftArrow;</div>
-            <div id="btDireita">&RightArrow;</div>
-            <div id="btPular"></div>
-        </div>
+        <canvas id="canvas" width="400" height="400"></canvas>
+        <p><b>Espaço</b>: pula | <b>Setas direita e esquerda</b>: movimetam</p>
     </div>
     <script>
         // Engine
