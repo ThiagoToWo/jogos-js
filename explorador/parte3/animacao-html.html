@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>O Explorador Box Jones</title>
+    <style>
+        body {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: Georgia, 'Times New Roman', Times, serif;
+        }
+
+        #fundo {
+            background-color: #000;
+            width: 400px;
+            height: 400px;
+        }
+    </style>
+</head>
+<body>
+    <div id="container">
+        <h1>O Explorador Box Jones</h1>
+        <p>Colete todas as moedas para mudar de fase.</p>
+        <div id="fundo">
+            <div id="box"></div>
+        </div>
+        <p><b>Espaço</b>: pula | <b>Setas direita e esquerda</b>: movimetam</p>
+    </div>
+    <script>
+        // Engine
+        let fundo;
+
+        let explorador;
+        const moedas = [];
+        const lavas = [];
+        const pressionados = [];
+
+        const G = 0.4; // Gravidade
+
+        window.addEventListener("keydown", (e) => {
+            switch (e.key) {
+                case "ArrowLeft": pressionados[0] = true; break;
+                case "ArrowRight": pressionados[1] = true; break;
+                case " ": pressionados[2] = true; break;
+            }
+        });
+
+        window.addEventListener("keyup", (e) => {
+            switch (e.key) {
+                case "ArrowLeft": pressionados[0] = false; break;
+                case "ArrowRight": pressionados[1] = false; break;
+                case " ": pressionados[2] = false; break;
+            }
+        });
+
+        function jogar() {
+            processarJogo();
+
+            renderizar();
+        }
+
+        function processarJogo() {
+            explorador.atualizar();
+
+            for (const moeda of moedas) {
+                moeda.atualizar();
+            }
+
+            for (const lava of lavas) {
+                lava.atualizar();
+            }
+
+            if (explorador.x < 0) {
+                explorador.x = 0;
+            }
+
+            if (explorador.x + explorador.w > fundo.clientWidth) {
+                explorador.x = fundo.clientWidth - explorador.w;
+            }
+
+            if (explorador.y + explorador.h > fundo.clientHeight) {
+                explorador.y = fundo.clientHeight - explorador.h;
+                explorador.vy = 0;
+                explorador.noSolo = true;
+            }
+        }
+
+        function renderizar() {
+            explorador.desenhar();
+
+            for (const moeda of moedas) {
+                moeda.desenhar();
+            }
+
+            for (const lava of lavas) {
+                lava.desenhar();
+            }
+        }
+
+        // Elementos
+        class Box {
+            constructor(x, y, w, h, vx, vy, cor, fundo) {
+                this.x = x;
+                this.y = y;
+                this.w = w;
+                this.h = h;
+                this.vx = vx;
+                this.vy = vy;
+                this.cor = cor;
+                this.fundo = fundo;
+                this.noSolo;
+                this.element = document.createElement("div");
+
+                this.element.style.position = "relative";
+                this.fundo.appendChild(this.element);
+            }
+
+            atualizar() {
+                if (pressionados[0]) { // esquerda                    
+                    this.x -= this.vx;
+                }
+
+                if (pressionados[1]) { // direita
+                    this.x += this.vx;
+                }
+
+                if (pressionados[2] && this.noSolo) { // pular            
+                    this.vy = -5;
+                    this.noSolo = false;
+                }
+
+                // sempre sobre a ação da gravidade
+                this.vy += G;
+                this.y += this.vy;
+            }
+
+            desenhar() {
+                this.element.style.left = this.x + "px";
+                this.element.style.top = this.y + "px";
+                this.element.style.width = this.w + "px";
+                this.element.style.height = this.h + "px";
+                this.element.style.backgroundColor = this.cor;
+            }
+        }
+
+        class Lava {
+            constructor(x, y, vx, vy, ampX, ampY, fundo) {
+                this.x = x;
+                this.y = y;
+                this.w = 5;
+                this.h = 5;
+                this.vx = vx;
+                this.vy = vy;
+                this.cor = "#f00";
+                this.fundo = fundo;
+                this.element = document.createElement("div");
+
+                this.anguloX = 0;
+                this.anguloY = 0;
+                this.centroX = this.x;
+                this.centroY = this.y;
+                this.amplitudeX = ampX;
+                this.amplitudeY = ampY;
+
+                this.element.style.position = "relative";
+                this.fundo.appendChild(this.element);
+            }
+
+            atualizar() {
+                this.x = this.centroX + Math.cos(this.anguloX) * this.amplitudeX;               
+                this.y = this.centroY + Math.sin(this.anguloY) * this.amplitudeY;
+                this.anguloX += this.vx;
+                this.anguloY += this.vy;
+            }
+
+            desenhar() {
+                this.element.style.left = this.x + "px";               
+                this.element.style.top = this.y + "px";
+                this.element.style.width = this.w + "px";
+                this.element.style.height = this.h + "px";
+                this.element.style.backgroundColor = this.cor;
+            }
+        }
+
+        class Moeda {
+            constructor(x, y, fundo) {
+                this.x = x;
+                this.y = y;
+                this.w = 5;
+                this.h = 5;
+                this.vy = 0.1;
+                this.cor = "#ff0";
+                this.fundo = fundo;
+                this.element = document.createElement("div");
+
+                this.angulo = 0;
+                this.centro = this.y;
+                this.amplitude = 1;
+
+                this.element.style.position = "relative";
+                this.fundo.appendChild(this.element);
+            }
+
+            atualizar() {
+                this.y = this.centro + Math.sin(this.angulo) * this.amplitude;
+                this.angulo += this.vy;
+            }
+
+            desenhar() {
+                this.element.style.left = this.x + "px";               
+                this.element.style.top = this.y + "px";
+                this.element.style.width = this.w + "px";
+                this.element.style.height = this.h + "px";
+                this.element.style.backgroundColor = this.cor;
+            }
+        }
+
+        // Principal
+        fundo = document.querySelector("#fundo");
+        
+        explorador = new Box(100, 100, 5, 10, 5, 0, "#fff", fundo);
+        const lavaMovelVertical = new Lava(200, 330, 0, 0.05, 0, 50, fundo);
+        const lavaMovelHorizontal = new Lava(100, 375, 0.05, 0, 50, 0, fundo);
+        const lavaMovelCircular = new Lava(300, 330, 0.05, 0.05, 50, 45, fundo);
+        const lavaMovelEliptica = new Lava(180, 250, 0.05, 0.05, 50, 115, fundo);
+        const moeda1 = new Moeda(50, 360, fundo);
+        const moeda2 = new Moeda(350, 355, fundo);
+
+        lavas.push(lavaMovelVertical);
+        lavas.push(lavaMovelHorizontal);
+        lavas.push(lavaMovelCircular);
+        lavas.push(lavaMovelEliptica);
+        moedas.push(moeda1);
+        moedas.push(moeda2);
+
+        setInterval(jogar, 1000/60);
+    </script>
+</body>
+</html>

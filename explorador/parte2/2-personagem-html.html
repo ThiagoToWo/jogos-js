@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>O Explorador Box Jones</title>
+    <style>
+        body {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: Georgia, 'Times New Roman', Times, serif;
+        }
+
+        #fundo {
+            background-color: #000;
+            width: 400px;
+            height: 400px;
+        }
+    </style>
+</head>
+<body>
+    <div id="container">
+        <h1>O Explorador Box Jones</h1>
+        <p>Colete todas as moedas para mudar de fase.</p>
+        <div id="fundo">
+            <div id="box"></div>
+        </div>
+        <p><b>Espaço</b>: pula | <b>Setas direita e esquerda</b>: movimetam</p>
+    </div>
+    <script>
+        class Box {
+            constructor(x, y, w, h, cor, fundo) {
+                this.x = x;
+                this.y = y;
+                this.w = w;
+                this.h = h;
+                this.cor = cor;
+                this.fundo = fundo;
+                this.element = document.createElement("div");
+
+                this.element.style.position = "relative";
+                this.fundo.appendChild(this.element);
+            }
+
+            desenhar() {
+                this.element.style.left = this.x + "px";
+                this.element.style.top = this.y + "px";
+                this.element.style.width = this.w + "px";
+                this.element.style.height = this.h + "px";
+                this.element.style.backgroundColor = this.cor;
+            }
+        }
+
+        const fundo = document.querySelector("#fundo");
+        
+        const explorador = new Box(100, 100, 5, 10, "#fff", fundo);
+        explorador.desenhar();
+    </script>
+</body>
+</html>

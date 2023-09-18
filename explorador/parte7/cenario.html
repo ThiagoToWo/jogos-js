@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>O Explorador Box Jones</title>
+    <link rel="stylesheet" href="src/style.css">
+</head>
+
+<body>
+    <div id="container">
+        <h1>O Explorador Box Jones</h1>
+        <p>Colete todas as moedas para mudar de fase.</p>
+        <canvas id="canvas" width="400" height="400"></canvas>
+        <p><b>Espaço</b>: pula | <b>Setas direita e esquerda</b>: movimetam</p>
+    </div>
+    <script src="src/engine.js"></script>
+    <script src="src/explorador.js"></script>
+    <script src="src/moeda.js"></script>
+    <script src="src/lava.js"></script>
+    <script src="src/bloco.js"></script>
+    <script src="src/cenarios.js"></script>
+    <script>
+        // Principal
+        canvas = document.querySelector("#canvas");
+        context = canvas.getContext("2d");
+
+        cenarioAtual = 0;
+
+        jogar();
+    </script>
+</body>
+
+</html>

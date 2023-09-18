@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>O Explorador Box Jones</title>
+    <link rel="stylesheet" href="src/style.css">
+</head>
+
+<body>
+    <div id="container">
+        <h1>O Explorador Box Jones</h1>
+        <p>Colete todas as moedas para mudar de fase.</p>
+        <canvas id="canvas" width="400" height="400"></canvas>
+        <p><b>Espaço</b>: pula | <b>Setas direita e esquerda</b>: movimetam</p>
+    </div>
+    <script src="src/engine.js"></script>
+    <script src="src/box.js"></script>
+    <script src="src/moeda.js"></script>
+    <script src="src/lava.js"></script>
+    <script>
+        // Principal
+        canvas = document.querySelector("#canvas");
+        context = canvas.getContext("2d");
+
+        explorador = new Box(100, 100, 5, 10, 5, 0, "#fff", context);
+        const lavaMovelVertical = new Lava(200, 305, 0, 0.05, 0, 50, context);
+        const lavaMovelHorizontal = new Lava(100, 350, 0.05, 0, 50, 0, context);
+        const lavaMovelCircular = new Lava(300, 305, 0.05, 0.05, 50, 50, context);
+        const lavaMovelEliptica = new Lava(180, 225, 0.05, 0.05, 50, 120, context);
+        const moeda1 = new Moeda(50, 350, context);
+        const moeda2 = new Moeda(350, 350, context);
+
+        lavas.push(lavaMovelVertical);
+        lavas.push(lavaMovelHorizontal);
+        lavas.push(lavaMovelCircular);
+        lavas.push(lavaMovelEliptica);
+        moedas.push(moeda1);
+        moedas.push(moeda2);
+
+        jogar();
+    </script>
+</body>
+
+</html>

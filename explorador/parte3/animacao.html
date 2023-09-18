@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>O Explorador Box Jones</title>
+    <style>
+        body {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: Georgia, 'Times New Roman', Times, serif;
+        }
+
+        canvas {
+            background-color: #000;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="container">
+        <h1>O Explorador Box Jones</h1>
+        <p>Colete todas as moedas para mudar de fase.</p>
+        <canvas id="canvas" width="400" height="400"></canvas>
+        <p><b>Espaço</b>: pula | <b>Setas direita e esquerda</b>: movimetam</p>
+    </div>
+    <script>
+        // Engine
+        let canvas;
+        let context;
+
+        let explorador;
+        const moedas = [];
+        const lavas = [];
+        const pressionados = [];
+
+        const G = 0.4; // Gravidade
+
+        window.addEventListener("keydown", (e) => {
+            switch (e.key) {
+                case "ArrowLeft": pressionados[0] = true; break;
+                case "ArrowRight": pressionados[1] = true; break;
+                case " ": pressionados[2] = true; break;
+            }
+        });
+
+        window.addEventListener("keyup", (e) => {
+            switch (e.key) {
+                case "ArrowLeft": pressionados[0] = false; break;
+                case "ArrowRight": pressionados[1] = false; break;
+                case " ": pressionados[2] = false; break;
+            }
+        });
+
+        function jogar() {
+            requestAnimationFrame(jogar, canvas);
+
+            processarJogo();
+
+            renderizar();
+        }
+
+        function processarJogo() {
+            explorador.atualizar();
+
+            for (const moeda of moedas) {
+                moeda.atualizar();
+            }
+
+            for (const lava of lavas) {
+                lava.atualizar();
+            }
+
+            if (explorador.x < 0) {
+                explorador.x = 0;
+            }
+
+            if (explorador.x + explorador.w > canvas.width) {
+                explorador.x = canvas.width - explorador.w;
+            }
+
+            if (explorador.y + explorador.h > canvas.height) {
+                explorador.y = canvas.height - explorador.h;
+                explorador.vy = 0;
+                explorador.noSolo = true;
+            }
+        }
+
+        function renderizar() {
+            context.clearRect(0, 0, canvas.width, canvas.height);
+
+            explorador.desenhar();
+
+            for (const moeda of moedas) {
+                moeda.desenhar();
+            }
+
+            for (const lava of lavas) {
+                lava.desenhar();
+            }
+        }
+
+        // Elementos
+        class Box {
+            constructor(x, y, w, h, vx, vy, cor, context) {
+                this.x = x;
+                this.y = y;
+                this.w = w;
+                this.h = h;
+                this.vx = vx;
+                this.vy = vy;
+                this.cor = cor;
+                this.ctx = context;
+                this.noSolo;
+            }
+
+            atualizar() {
+                if (pressionados[0]) { // esquerda                    
+                    this.x -= this.vx;
+                }
+
+                if (pressionados[1]) { // direita
+                    this.x += this.vx;
+                }
+
+                if (pressionados[2] && this.noSolo) { // pular            
+                    this.vy = -5;
+                    this.noSolo = false;
+                }
+
+                // sempre sobre a ação da gravidade
+                this.vy += G;
+                this.y += this.vy;
+            }
+
+            desenhar() {
+                this.ctx.save();
+                this.ctx.fillStyle = this.cor;
+                this.ctx.fillRect(this.x, this.y, this.w, this.h);
+                this.ctx.restore();
+            }
+        }
+
+        class Lava {
+            constructor(x, y, vx, vy, ampX, ampY, context) {
+                this.x = x;
+                this.y = y;
+                this.w = 5;
+                this.h = 5;
+                this.vx = vx;
+                this.vy = vy;
+                this.cor = "#f00";
+                this.ctx = context;
+
+                this.anguloX = 0;
+                this.anguloY = 0;
+                this.centroX = this.x;
+                this.centroY = this.y;
+                this.amplitudeX = ampX;
+                this.amplitudeY = ampY;
+            }
+
+            atualizar() {
+                this.x = this.centroX + Math.cos(this.anguloX) * this.amplitudeX;               
+                this.y = this.centroY + Math.sin(this.anguloY) * this.amplitudeY;
+                this.anguloX += this.vx;
+                this.anguloY += this.vy;
+            }
+
+            desenhar() {
+                this.ctx.save();
+                this.ctx.fillStyle = this.cor;
+                this.ctx.fillRect(this.x, this.y, this.w, this.h);
+                this.ctx.restore();
+            }
+        }
+
+        class Moeda {
+            constructor(x, y, context) {
+                this.x = x;
+                this.y = y;
+                this.w = 5;
+                this.h = 5;
+                this.vy = 0.1;
+                this.cor = "#ff0";
+                this.ctx = context;
+
+                this.angulo = 0;
+                this.centro = this.y;
+                this.amplitude = 1;
+            }
+
+            atualizar() {
+                this.y = this.centro + Math.sin(this.angulo) * this.amplitude;
+                this.angulo += this.vy;
+            }
+
+            desenhar() {
+                this.ctx.save();
+                this.ctx.fillStyle = this.cor;
+                this.ctx.fillRect(this.x, this.y, this.w, this.h);
+                this.ctx.restore();
+            }
+        }
+
+        // Principal
+        canvas = document.querySelector("#canvas");
+        context = canvas.getContext("2d");
+
+        explorador = new Box(100, 100, 5, 10, 5, 0, "#fff", context);
+        const lavaMovelVertical = new Lava(200, 345, 0, 0.05, 0, 50, context);
+        const lavaMovelHorizontal = new Lava(100, 390, 0.05, 0, 50, 0, context);
+        const lavaMovelCircular = new Lava(300, 345, 0.05, 0.05, 50, 50, context);
+        const lavaMovelEliptica = new Lava(180, 265, 0.05, 0.05, 50, 120, context);
+        const moeda1 = new Moeda(50, 390, context);
+        const moeda2 = new Moeda(350, 390, context);
+
+        lavas.push(lavaMovelVertical);
+        lavas.push(lavaMovelHorizontal);
+        lavas.push(lavaMovelCircular);
+        lavas.push(lavaMovelEliptica);
+        moedas.push(moeda1);
+        moedas.push(moeda2);
+
+        jogar();
+    </script>
+</body>
+
+</html>

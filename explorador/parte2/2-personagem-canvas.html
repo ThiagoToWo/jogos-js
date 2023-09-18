@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>O Explorador Box Jones</title>
+    <style>
+        body {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: Georgia, 'Times New Roman', Times, serif;
+        }
+
+        canvas {
+            background-color: #000;
+        }
+    </style>
+</head>
+<body>
+    <div id="container">
+        <h1>O Explorador Box Jones</h1>
+        <p>Colete todas as moedas para mudar de fase.</p>
+        <canvas id="canvas" width="400" height="400"></canvas>
+        <p><b>Espaço</b>: pula | <b>Setas direita e esquerda</b>: movimetam</p>
+    </div>
+    <script>
+        class Box {
+            constructor(x, y, w, h, cor, context) {
+                this.x = x;
+                this.y = y;
+                this.w = w;
+                this.h = h;
+                this.cor = cor;
+                this.ctx = context;
+            }
+
+            desenhar() {
+                this.ctx.save();
+                this.ctx.fillStyle = this.cor;
+                this.ctx.fillRect(this.x, this.y, this.w, this.h);
+                this.ctx.restore();
+            }
+        }
+
+        const canvas = document.querySelector("#canvas");
+        const context = canvas.getContext("2d");
+        
+        const explorador = new Box(100, 100, 5, 10, "#fff", context);
+        explorador.desenhar();
+    </script>
+</body>
+</html>
