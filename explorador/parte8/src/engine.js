@@ -52,8 +52,8 @@ window.addEventListener("keyup", (e) => {
 });
 
 // Função principal de controle de estados do jogo
-function iniciarJogo() {
-    requestAnimationFrame(iniciarJogo, canvas);
+function jogar() {
+    requestAnimationFrame(jogar, canvas);
 
     switch (estadoAtual) {
         case CARREGANDO:

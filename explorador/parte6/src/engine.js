@@ -32,8 +32,8 @@ window.addEventListener("keyup", (e) => {
     }
 });
 
-function iniciarJogo() {
-    requestAnimationFrame(iniciarJogo, canvas);
+function jogar() {
+    requestAnimationFrame(jogar, canvas);
 
     switch (estadoAtual) {
         case JOGANDO:

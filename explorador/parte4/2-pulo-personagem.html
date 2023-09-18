@@ -52,8 +52,8 @@
             }
         });
 
-        function iniciarJogo() {
-            requestAnimationFrame(iniciarJogo, canvas);
+        function jogar() {
+            requestAnimationFrame(jogar, canvas);
 
             processarJogo();
 
@@ -130,7 +130,7 @@
 
         explorador = new Box(100, 100, 5, 10, 5, 0, "#fff", context);
 
-        iniciarJogo();
+        jogar();
     </script>
 </body>
 
