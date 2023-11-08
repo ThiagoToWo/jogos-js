@@ -17,11 +17,14 @@ const btPescar = document.querySelector("#btPescar");
 const btColetar = document.querySelector("#btColetar");
 const btColher = document.querySelector("#btColher");
 const btMapa = document.querySelector("#btMapa");
+const prMapa = document.querySelector("#prMapa");
 
-const MAP_SIZE = 100; // dimensão do mapa
-const map = []; // mapa matrix MAP_SIZE x MAP_SIZE
-let localX = 49; // localização x do personagem
-let localY = 49; // localização y do personagem
+const MAP_SIZE = 50; // dimensão do mapa
+const map = []; // mapa matriz MAP_SIZE x MAP_SIZE
+const trilha = []; // matriz representando a trilha do personagem
+const RASTRO = "." // símbolo do rastro da trilha
+let localX = MAP_SIZE / 2 - 1; // localização x do personagem
+let localY = MAP_SIZE / 2 - 1; // localização y do personagem
 let tempo = -1; // tempo decorrido do jogo em dias (5 min)
 let clima = "ameno"; // clima do dia
 let dia = true; // se é dia ou noite
@@ -57,7 +60,7 @@ let vivo = true; // se o personagem está vivo
 
 // Preencher mapa
 for (let i = 0; i < MAP_SIZE; i++) {
-    const linha = []
+    const linha = [];
     for (let j = 0; j < MAP_SIZE; j++) {
         // Escolher a quantidade de peixes
         if (Math.random() < .3333) {
@@ -79,8 +82,19 @@ for (let cont = 0; cont < 2; cont++) {
     map[ilhaX][ilhaY] = "ilha";
 }
 
+// Inicializar a marcação da trilha
+for (let i = 0; i < MAP_SIZE; i++) {
+    const linha = [];
+    for (let j = 0; j < MAP_SIZE; j++) {
+        linha[j] = " ";
+    }
+
+    trilha[i] = linha;
+}
+
 // Criar timer
 contarMeridiano();
+atualizarTrilha();
 
 /*console.table(map);
 for (let i = 0; i < MAP_SIZE; i++) {
@@ -113,7 +127,8 @@ function contarMeridiano() {
         fome--; // Reduz os dias que pode ficar sem comer
         sede--; // Reduz os dias que pode ficar sem beber  
         dvTudo.style.backgroundColor = "rgb(255, 255, 255, 0.5)";
-        document.body.style.color = "black";     
+        document.body.style.color = "black";
+        prMapa.style.backgroundColor = "rgb(0, 255, 255)";    
 
         if (map[localX][localY] != "ilha") locomoverADeriva();
 
@@ -154,6 +169,7 @@ function contarMeridiano() {
         spMeridiano.innerHTML = "&#9790;" 
         dvTudo.style.backgroundColor = "rgb(0, 0, 0, 0.5)";
         document.body.style.color = "white";
+        prMapa.style.backgroundColor = "rgb(0, 0, 128)";
 
         // Muda o clima da noite de acordo como estava no dia
         let n;
@@ -211,10 +227,8 @@ function locomoverParaNorte() {
     spMensagem.innerHTML = "Energia -" + FatorClima[clima];
 
     verificarMorte();
-
-    if (map[localX][localY] == "ilha") {
-        spMensagem.innerHTML = "Você encontrou uma ilha!";
-    }
+    verificarTerraFirme();
+    atualizarTrilha();
 }
 
 function locomoverParaSul() {
@@ -226,10 +240,8 @@ function locomoverParaSul() {
     spMensagem.innerHTML = "Energia -" + FatorClima[clima];
 
     verificarMorte();
-
-    if (map[localX][localY] == "ilha") {
-        spMensagem.innerHTML = "Você encontrou uma ilha!";
-    }
+    verificarTerraFirme();
+    atualizarTrilha();
 }
 
 function locomoverParaLeste() {
@@ -241,10 +253,8 @@ function locomoverParaLeste() {
     spMensagem.innerHTML = "Energia -" + FatorClima[clima];
 
     verificarMorte();
-
-    if (map[localX][localY] == "ilha") {
-        spMensagem.innerHTML = "Você encontrou uma ilha!";
-    }
+    verificarTerraFirme();
+    atualizarTrilha();
 }
 
 function locomoverParaOeste() {
@@ -256,10 +266,8 @@ function locomoverParaOeste() {
     spMensagem.innerHTML = "Energia -" + FatorClima[clima];
 
     verificarMorte();
-
-    if (map[localX][localY] == "ilha") {
-        spMensagem.innerHTML = "Você encontrou uma ilha!";
-    }
+    verificarTerraFirme();
+    atualizarTrilha();
 }
 
 function locomoverADeriva() {
@@ -369,4 +377,25 @@ function verificarMorte() {
 
         vivo = false;
     }
+}
+
+function verificarTerraFirme() {
+    if (map[localX][localY] == "ilha") {
+        spMensagem.innerHTML = "Você encontrou uma ilha!";
+    }
+}
+
+function atualizarTrilha() {
+    trilha[localX][localY] = RASTRO;
+
+    let mostra = "";
+
+    for (let i = 0; i < MAP_SIZE; i++) {
+        for (let j = 0; j < MAP_SIZE; j++) {
+            mostra += trilha[j][i];
+        }
+        mostra += "\n";
+    }
+
+    prMapa.innerText = mostra;
 }
