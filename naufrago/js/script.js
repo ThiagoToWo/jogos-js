@@ -286,6 +286,8 @@ function locomoverADeriva() {
         case 4: // oeste
             localX--;
     }
+
+    atualizarTrilha();
 }
 
 function pescar() {
