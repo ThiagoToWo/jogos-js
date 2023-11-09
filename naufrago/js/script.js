@@ -112,6 +112,26 @@ btPescar.addEventListener("click", pescar);
 btColetar.addEventListener("click", coletarAgua);
 btColher.addEventListener("click", colherCocos);
 btMapa.addEventListener("click", mostarLocal);
+window.addEventListener("keydown", function(evento) {
+    evento.preventDefault();
+    tecla = evento.key;
+    console.log(tecla)
+
+    switch (tecla) {
+        case "a":
+        case "4":
+        case "ArrowLeft": locomoverParaOeste(); break;
+        case "w":
+        case "8":
+        case "ArrowUp": locomoverParaNorte(); break;
+        case "d":
+        case "6":
+        case "ArrowRight": locomoverParaLeste(); break;
+        case "s":
+        case "2":
+        case "ArrowDown": locomoverParaSul(); break;
+    }
+});
 
 ////////////////////////////////////////////////////////////////////////////
 //                                Funções                                 //
@@ -388,13 +408,21 @@ function verificarTerraFirme() {
 }
 
 function atualizarTrilha() {
-    trilha[localX][localY] = RASTRO;
+    const trilhaX = localY;
+    const trilhaY = localX;
+
+    trilha[trilhaX][trilhaY] = RASTRO;
+
+    const lx = trilhaX >= 10 ? 10 : trilhaX;
+    const ly = trilhaY >= 10 ? 10 : trilhaY;
+    const limiteX = MAP_SIZE - trilhaX >= 10 ? 10 : MAP_SIZE - trilhaX;
+    const limiteY = MAP_SIZE - trilhaY >= 10 ? 10 : MAP_SIZE - trilhaY;
 
     let mostra = "";
 
-    for (let i = 0; i < MAP_SIZE; i++) {
-        for (let j = 0; j < MAP_SIZE; j++) {
-            mostra += trilha[j][i];
+    for (let i = trilhaX - lx; i < trilhaX + limiteX; i++) {
+        for (let j = trilhaY - ly; j < trilhaY + limiteY; j++) {
+            mostra += trilha[i][j];
         }
         mostra += "\n";
     }
