@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mar de Árvores</title>
+    <style>
+        body {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #acc7a3;
+            font-family: 'Courier New', Courier, monospace;
+        }
+
+        #estagio {
+            width: fit-content;
+            font-size: 20px;
+            line-height: 16px;            
+            color: #060;
+            border: 1px solid #000;
+            border-radius: 5px;
+            margin: 0 auto;
+            background: -webkit-radial-gradient(center, #fff, #000);
+            background: radial-gradient(center, circle, #fff, #000);
+        }
+
+        table {
+            margin: 0 auto;
+        }
+        
+        .butao-grande {
+            width: 80px;
+            height: 80px;
+            font-size: 50px;
+            margin: 20px;            
+        }
+
+        button,
+        .butao-grande {
+            border: 2px solid #000;
+            border-radius: 10px;
+            background: -webkit-linear-gradient(top, #a3a3a3, #000);
+            background: linear-gradient(top, #a3a3a3, #000);
+            color: #fff;
+            box-shadow: 5px 5px 3px rgba(0, 0, 0, 0.5);
+            cursor: pointer;
+            user-select: none;
+        }
+        button:hover,
+        .butao-grande:hover {
+            background: -webkit-linear-gradient(top, #acc7a3, #506651);
+            background: linear-gradient(top, #acc7a3, #506651);
+            box-shadow: 5px 5px 3px rgba(0, 0, 0, 0.5);
+        }
+
+        button:active,
+        .butao-grande:active {
+            background: -webkit-linear-gradient(top, #858565, #c5c9a9);
+            background: linear-gradient(top, #858565, #c5c9a9);
+            box-shadow: 0px 0px;
+        }
+
+        .negrito {
+            font-weight: bolder;
+        }
+    </style>
+</head>
+<body>
+    <div id="tudo">
+        <h1>Mar de Árvores</h1>
+        <p>
+            Encontre um caminho para sair da floresta sombria.
+        </p>
+        <p class="negrito">
+            Coordenadas (x, y) = <span id="coordenadas"></span>
+            <button id="btNovoMapa">Novo mapa</button>
+        </p>
+        <pre id="estagio"></pre>
+        <table>
+            <tr>
+                <td></td>
+                <td><button id="btCima" class="butao-grande">&uparrow;</button></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td><button id="btEsquerda" class="butao-grande">&leftarrow;</button></td>
+                <td></td>
+                <td><button id="btDireita" class="butao-grande">&rightarrow;</button></td>
+            </tr>
+            <tr>
+                <td></td>
+                <td><button id="btBaixo" class="butao-grande">&downarrow;</button></td>
+                <td></td>
+            </tr>
+        </table>
+    </div>
+
+    <script>
+        const coordenadas = document.querySelector("#coordenadas");
+        const btNovoMapa = document.querySelector("#btNovoMapa")
+        const estagio = document.querySelector("#estagio");
+        const btEsquerda = document.querySelector("#btEsquerda");
+        const btCima = document.querySelector("#btCima");
+        const btDireita = document.querySelector("#btDireita");
+        const btBaixo = document.querySelector("#btBaixo");
+        const mapa = [];
+        const LARGURA_MAPA = 100;
+        const ALTURA_MAPA = 100;
+        let LARGURA_CAM = 20;
+        let ALTURA_CAM = 10;
+        const PERSONAGEM = 1;
+        const ARVORE = 2;
+        const VAZIO = 3;
+        const RASTRO = 4;
+        let x = Math.floor(LARGURA_MAPA / 2);
+        let y = Math.floor(ALTURA_MAPA / 2);
+        let cameraX;
+        let cameraY;
+        let saiu = false;
+
+        preencherMapa();        
+        mostrarMapa();
+        window.addEventListener("keydown", mover);
+
+        btCima.addEventListener("click", moverParaCima);
+        btEsquerda.addEventListener("click", moverParaEsquerda);
+        btDireita.addEventListener("click", moverParaDireita);
+        btBaixo.addEventListener("click", moverParaBaixo);
+
+        btNovoMapa.addEventListener("click", function() {
+            window.location.reload();
+        });
+        
+        //*******************Funções******************//
+        function preencherMapa() {
+            for (let i = 0; i < ALTURA_MAPA; i++) {
+                const linha = [];
+                for (let j = 0; j < LARGURA_MAPA; j++) {
+                    if (
+                        Math.random() < 0.4 && 
+                        i >= 1 && i < ALTURA_MAPA - 1 && 
+                        j >= 1 &&
+                         j < LARGURA_MAPA - 1
+                    ) {
+                        linha[j] = ARVORE
+                    } else {
+                        linha[j] = VAZIO;
+                    }
+                }
+
+                mapa[i] = linha;
+            }
+
+            mapa[y][x] = PERSONAGEM;
+        }
+
+        function mostrarMapa() {
+            let mostra = "";
+            cameraX = Math.floor(x - LARGURA_CAM / 2);
+            cameraY = Math.floor(y - ALTURA_CAM / 2);
+
+            if (cameraX < 0) {
+                cameraX = 0;
+            }
+
+            if (cameraX + LARGURA_CAM >= LARGURA_MAPA) {
+                cameraX = LARGURA_MAPA - LARGURA_CAM;
+            }
+
+            if (cameraY < 0) {
+                cameraY = 0;
+            }
+
+            if (cameraY + ALTURA_CAM >= ALTURA_MAPA) {
+                cameraY = ALTURA_MAPA - ALTURA_CAM;
+            }
+
+            for (let i = cameraY; i < cameraY + ALTURA_CAM; i++) {
+                for (let j = cameraX; j < cameraX + LARGURA_CAM; j++) {
+                    switch(mapa[i][j]) {
+                        case PERSONAGEM: mostra += "<font style='color:#f00'>i</font>"; break;
+                        case ARVORE: mostra += "#"; break;
+                        case VAZIO: mostra += " "; break;
+                        case RASTRO: mostra += "<font style='color:#f00'>*</font>"; break;
+                    }                    
+                }
+                mostra += "\n";
+            }
+
+            estagio.innerHTML = mostra;
+            coordenadas.innerText = `(${x}, ${y})`;
+        }
+
+        function mover(evento) {
+            const tecla = evento.key;
+
+            switch (tecla) {
+                case "ArrowLeft":
+                case "a": moverParaEsquerda(); break;
+                case "ArrowUp":
+                case "w": moverParaCima(); break;
+                case "ArrowRight":
+                case "d": moverParaDireita(); break;
+                case "ArrowDown":
+                case "s": moverParaBaixo(); break;
+            }
+            
+            verificarFim();
+        }
+
+        function moverParaEsquerda() {
+            if (x - 1 >= 0 && mapa[y][x - 1] != ARVORE) {
+                mapa[y][x] = RASTRO;
+                x--;
+                mapa[y][x] = PERSONAGEM;
+            }
+
+            mostrarMapa();
+            
+            if (x == 0) saiu = true;
+        }
+
+        function moverParaCima() {
+            if (y - 1 >= 0 && mapa[y - 1][x] != ARVORE) {
+                mapa[y][x] = RASTRO;
+                y--;
+                mapa[y][x] = PERSONAGEM;
+            }
+
+            mostrarMapa();
+
+            if (y == 0) saiu = true;
+        }
+
+        function moverParaDireita() {
+            if (x + 1 < LARGURA_MAPA && mapa[y][x + 1] != ARVORE) {
+                mapa[y][x] = RASTRO;
+                x++;
+                mapa[y][x] = PERSONAGEM;
+            }
+
+            mostrarMapa();
+
+            if (x == LARGURA_MAPA - 1) saiu = true;
+        }
+
+        function moverParaBaixo() {
+            if (y + 1 < ALTURA_MAPA && mapa[y + 1][x] != ARVORE) {
+                mapa[y][x] = RASTRO;
+                y++;
+                mapa[y][x] = PERSONAGEM;
+            }
+
+            mostrarMapa();
+
+            if (y == ALTURA_MAPA) saiu = true;
+        }
+
+        function verificarFim() {
+            if (saiu) {
+                LARGURA_CAM = LARGURA_MAPA;
+                ALTURA_CAM = ALTURA_MAPA;
+                document.querySelector("table").style.display = "none"
+                estagio.style.fontSize = "6px";
+                estagio.style.lineHeight = "4.8px";
+
+                window.removeEventListener("keydown", mover);
+                mostrarMapa();
+            }
+        }
+    </script>
+</body>
+</html>
