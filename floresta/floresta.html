@@ -10,7 +10,6 @@
             align-items: center;
             justify-content: center;
             background-color: #acc7a3;
-            font-family: 'Courier New', Courier, monospace;
         }
 
         #estagio {
@@ -254,14 +253,14 @@
 
             mostrarMapa();
 
-            if (y == ALTURA_MAPA) saiu = true;
+            if (y == ALTURA_MAPA - 1) saiu = true;
         }
 
         function verificarFim() {
             if (saiu) {
                 LARGURA_CAM = LARGURA_MAPA;
                 ALTURA_CAM = ALTURA_MAPA;
-                document.querySelector("table").style.display = "none"
+                document.querySelector("table").style.display = "none";
                 estagio.style.fontSize = "6px";
                 estagio.style.lineHeight = "4.8px";
 
