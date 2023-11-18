@@ -69,7 +69,7 @@
     <div id="tudo">
         <h1>Mar de Árvores</h1>
         <p>
-            Encontre um caminho para atravessar a floresta sombria.
+            Encontre um caminho para sair da floresta sombria.
         </p>
         <p class="negrito">
             Coordenadas (x, y) = <span id="coordenadas"></span>
@@ -113,10 +113,9 @@
         const VAZIO = 3;
         const RASTRO = 4;
         let x = Math.floor(LARGURA_MAPA / 2);
-        let y = 0;
+        let y = Math.floor(ALTURA_MAPA / 2);
         let cameraX;
         let cameraY;
-        let saiu = false;
 
         preencherMapa();        
         mostrarMapa();
@@ -138,7 +137,8 @@
                 for (let j = 0; j < LARGURA_MAPA; j++) {
                     if (
                         Math.random() < 0.4 && 
-                        i >= 1 && i < ALTURA_MAPA - 1
+                        i >= 1 && i < ALTURA_MAPA - 1 &&
+                        j >= 1 && j < LARGURA_MAPA - 1
                     ) {
                         linha[j] = ARVORE
                     } else {
@@ -212,6 +212,7 @@
             }
 
             mostrarMapa();
+            verificarFim();
         }
 
         function moverParaCima() {
@@ -222,6 +223,7 @@
             }
 
             mostrarMapa();
+            verificarFim();
         }
 
         function moverParaDireita() {
@@ -232,6 +234,7 @@
             }
 
             mostrarMapa();
+            verificarFim();
         }
 
         function moverParaBaixo() {
@@ -246,7 +249,7 @@
         }
 
         function verificarFim() {
-            if (y == ALTURA_MAPA - 1) {
+            if (x == 0 || x == LARGURA_MAPA - 1 || y == 0 || y == ALTURA_MAPA - 1) {
                 LARGURA_CAM = LARGURA_MAPA;
                 ALTURA_CAM = ALTURA_MAPA;
                 document.querySelector("table").style.display = "none";
