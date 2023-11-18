@@ -104,8 +104,8 @@
         const btDireita = document.querySelector("#btDireita");
         const btBaixo = document.querySelector("#btBaixo");
         const mapa = [];
-        const LARGURA_MAPA = 100;
-        const ALTURA_MAPA = 100;
+        const LARGURA_MAPA = 200;
+        const ALTURA_MAPA = 200;
         let LARGURA_CAM = 20;
         let ALTURA_CAM = 10;
         const PERSONAGEM = 1;
@@ -255,9 +255,13 @@
                 document.querySelector("table").style.display = "none";
                 estagio.style.fontSize = "6px";
                 estagio.style.lineHeight = "4.8px";
-
+                estagio.style.width = "300px";
+                estagio.style.height = "400px";
+                estagio.style.overflow = "scroll";
+                
                 window.removeEventListener("keydown", mover);
                 mostrarMapa();
+                estagio.scroll(200, 300);
             }
         }
     </script>
