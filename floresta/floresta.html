@@ -69,7 +69,7 @@
     <div id="tudo">
         <h1>Mar de Árvores</h1>
         <p>
-            Encontre um caminho para sair da floresta sombria.
+            Encontre um caminho para atravessar a floresta sombria.
         </p>
         <p class="negrito">
             Coordenadas (x, y) = <span id="coordenadas"></span>
@@ -113,7 +113,7 @@
         const VAZIO = 3;
         const RASTRO = 4;
         let x = Math.floor(LARGURA_MAPA / 2);
-        let y = Math.floor(ALTURA_MAPA / 2);
+        let y = 0;
         let cameraX;
         let cameraY;
         let saiu = false;
@@ -138,9 +138,7 @@
                 for (let j = 0; j < LARGURA_MAPA; j++) {
                     if (
                         Math.random() < 0.4 && 
-                        i >= 1 && i < ALTURA_MAPA - 1 && 
-                        j >= 1 &&
-                         j < LARGURA_MAPA - 1
+                        i >= 1 && i < ALTURA_MAPA - 1
                     ) {
                         linha[j] = ARVORE
                     } else {
@@ -204,8 +202,6 @@
                 case "ArrowDown":
                 case "s": moverParaBaixo(); break;
             }
-            
-            verificarFim();
         }
 
         function moverParaEsquerda() {
@@ -216,8 +212,6 @@
             }
 
             mostrarMapa();
-            
-            if (x == 0) saiu = true;
         }
 
         function moverParaCima() {
@@ -228,8 +222,6 @@
             }
 
             mostrarMapa();
-
-            if (y == 0) saiu = true;
         }
 
         function moverParaDireita() {
@@ -240,8 +232,6 @@
             }
 
             mostrarMapa();
-
-            if (x == LARGURA_MAPA - 1) saiu = true;
         }
 
         function moverParaBaixo() {
@@ -252,12 +242,11 @@
             }
 
             mostrarMapa();
-
-            if (y == ALTURA_MAPA - 1) saiu = true;
+            verificarFim();
         }
 
         function verificarFim() {
-            if (saiu) {
+            if (y == ALTURA_MAPA - 1) {
                 LARGURA_CAM = LARGURA_MAPA;
                 ALTURA_CAM = ALTURA_MAPA;
                 document.querySelector("table").style.display = "none";
