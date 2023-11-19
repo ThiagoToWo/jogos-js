@@ -108,6 +108,7 @@
         const ALTURA_MAPA = 200;
         let LARGURA_CAM = 20;
         let ALTURA_CAM = 10;
+        const FREQ_ARVORES = 0.4;
         const PERSONAGEM = 1;
         const ARVORE = 2;
         const VAZIO = 3;
@@ -136,7 +137,7 @@
                 const linha = [];
                 for (let j = 0; j < LARGURA_MAPA; j++) {
                     if (
-                        Math.random() < 0.4 && 
+                        Math.random() < FREQ_ARVORES && 
                         i >= 1 && i < ALTURA_MAPA - 1 &&
                         j >= 1 && j < LARGURA_MAPA - 1
                     ) {
@@ -258,6 +259,7 @@
                 estagio.style.width = "300px";
                 estagio.style.height = "400px";
                 estagio.style.overflow = "scroll";
+                estagio.style.background = "#ffd";
                 
                 window.removeEventListener("keydown", mover);
                 mostrarMapa();
