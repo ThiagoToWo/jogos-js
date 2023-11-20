@@ -125,6 +125,7 @@
         const VAZIO = 3;
         const RASTRO = 4;
         const MONSTRO = 5;
+        const MORTO = 6;
         const NUM_MONSTROS = 50; // quantidade de monstros
         const monstros = []; // lista para guardar os monstros
         // possíveis direções de movimentação dos monstros
@@ -222,6 +223,7 @@
                         case VAZIO: mostra += " "; break;
                         case RASTRO: mostra += "<font style='color:#f00'>*</font>"; break;
                         case MONSTRO: mostra += "<font style='color:#000'>T</font>"; break;
+                        case MORTO: mostra += "<font style='color:#f00'>X</font>"; break;
                     }
                 }
                 mostra += "\n";
@@ -250,52 +252,104 @@
             if (x - 1 >= 0 && mapa[y][x - 1] != ARVORE) {
                 mapa[y][x] = RASTRO;
                 x--;
-                mapa[y][x] = PERSONAGEM;
                 
-                if (x == 0) finalizar();
+                // se você avançou em um monstro
+                if (mapa[y][x] == MONSTRO) {
+                    mapa[y][x] = MORTO;
+                    finalizar();
+                } else if (x == 0) { // se saiu da floresta
+                    mapa[y][x] = PERSONAGEM;
+                    finalizar();
+                } else { // se não avançou no monstrou e não saiu da floresta
+                    mapa[y][x] = PERSONAGEM;
+                    const meAtacou = moverMonstros(monstros);
+                    
+                    if (meAtacou) { // se o monstro te avançar
+                        mapa[y][x] = MORTO;
+                        finalizar();
+                    } else { // se não te avançar
+                        renderizar();
+                    }
+                }
             }
-
-            moverMonstros(monstros);
-            renderizar();
         }
 
         function moverParaCima() {
             if (y - 1 >= 0 && mapa[y - 1][x] != ARVORE) {
                 mapa[y][x] = RASTRO;
                 y--;
-                mapa[y][x] = PERSONAGEM;
                 
-                if (y == 0) finalizar();
+                // se você avançou em um monstro
+                if (mapa[y][x] == MONSTRO) {
+                    mapa[y][x] = MORTO;
+                    finalizar();
+                } else if (y == 0) { // se saiu da floresta
+                    mapa[y][x] = PERSONAGEM;
+                    finalizar();
+                } else { // se não avançou no monstrou e não saiu da floresta
+                    mapa[y][x] = PERSONAGEM;
+                    const meAtacou = moverMonstros(monstros);
+                    
+                    if (meAtacou) { // se o monstro te avançar
+                        mapa[y][x] = MORTO;
+                        finalizar();
+                    } else { // se não te avançar
+                        renderizar();
+                    }
+                }
             }
-
-            moverMonstros(monstros);
-            renderizar();
         }
 
         function moverParaDireita() {
             if (x + 1 < LARGURA_MAPA && mapa[y][x + 1] != ARVORE) {
                 mapa[y][x] = RASTRO;
                 x++;
-                mapa[y][x] = PERSONAGEM;
                 
-                if (x == LARGURA_MAPA - 1) finalizar();
+                // se você avançou em um monstro
+                if (mapa[y][x] == MONSTRO) {
+                    mapa[y][x] = MORTO;
+                    finalizar();
+                } else if (x == LARGURA_MAPA - 1) { // se saiu da floresta
+                    mapa[y][x] = PERSONAGEM;
+                    finalizar();
+                } else { // se não avançou no monstrou e não saiu da floresta
+                    mapa[y][x] = PERSONAGEM;
+                    const meAtacou = moverMonstros(monstros);
+                    
+                    if (meAtacou) { // se o monstro te avançar
+                        mapa[y][x] = MORTO;
+                        finalizar();
+                    } else { // se não te avançar
+                        renderizar();
+                    }
+                }
             }
-
-            moverMonstros(monstros);
-            renderizar();
         }
 
         function moverParaBaixo() {
             if (y + 1 < ALTURA_MAPA && mapa[y + 1][x] != ARVORE) {
                 mapa[y][x] = RASTRO;
                 y++;
-                mapa[y][x] = PERSONAGEM;
                 
-                if (y == ALTURA_MAPA - 1) finalizar();
-            }
-
-            moverMonstros(monstros);
-            renderizar();
+                // se você avançou em um monstro
+                if (mapa[y][x] == MONSTRO) {
+                    mapa[y][x] = MORTO;
+                    finalizar();
+                } else if (y == ALTURA_MAPA - 1) { // se saiu da floresta
+                    mapa[y][x] = PERSONAGEM;
+                    finalizar();
+                } else { // se não avançou no monstrou e não saiu da floresta
+                    mapa[y][x] = PERSONAGEM;
+                    const meAtacou = moverMonstros(monstros);
+                    
+                    if (meAtacou) { // se o monstro te avançar
+                        mapa[y][x] = MORTO;
+                        finalizar();
+                    } else { // se não te avançar
+                        renderizar();
+                    }
+                }
+            }            
         }
 
 
@@ -327,14 +381,15 @@
                 // atualiza a posição do monstro
                 mapa[monstro.y][monstro.x] = MONSTRO;
 
-                // se o monstro foi para o local do personagem ou cruzou com ele
-                if (mapa[y][x] == MONSTRO || mapa[y][x] == VAZIO) {
-                    finalizar();
-                    return;
+                // se o monstro me avançar
+                if (mapa[y][x] == MONSTRO) {
+                    return true;
                 }
 
                 mudarDirecao(monstro); // calcula as futuras direções do monstro
             }
+
+            return false; // se o monstro não me avançar
         }
 
         function mudarDirecao(monstro) {
